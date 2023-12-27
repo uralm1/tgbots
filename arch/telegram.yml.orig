@@ -1,0 +1,9 @@
+---
+Token: 123456:qwertyuiop
+SetMyCommands: false
+#SendOnlyToChatId: 654321
+AllowedUserIds:
+  - 543211
+  - 12345
+
+SleepInterval: 5
