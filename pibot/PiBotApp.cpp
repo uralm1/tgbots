@@ -1,10 +1,12 @@
 #include "PiBotApp.h"
 
 #include "Poller.h"
+#include "command.h"
 
 #include <iostream>
 #include <vector>
 #include <map>
+#include <functional>
 
 using namespace std;
 using namespace TgBot;
@@ -24,12 +26,16 @@ PiBotApp::PiBotApp(const std::string& config_file)
 }
 
 void PiBotApp::startup() {
-  clog << "in startup()\n";
+  //clog << "in startup()\n";
+
+  using namespace std::placeholders;
+
+  auto& evt = bot_.getEvents();
 
   //unknown commands call reply_error()
-  bot_.getEvents().onUnknownCommand([this](Message::Ptr message) {
+  evt.onUnknownCommand([this](Message::Ptr message) {
     //access check
-    if ( is_user_allowed(message) ) {
+    if ( user_allowed_internal_(message) ) {
       cout << "Unknown command: " << message->text << endl;
       reply_error(message);
     } else {
@@ -38,23 +44,28 @@ void PiBotApp::startup() {
   });
 
   //commands
-  bot_.getEvents().onCommand("start", [this](Message::Ptr message) {
-    if ( is_user_allowed(message) ) {
-      cout << "Processing command: " << message->text << endl;
+  evt.onCommand("start", [this](Message::Ptr message) {
+    if ( !user_allowed(message) ) return;
 
-      send(message, "Hi, start!");
-      printf("Chat id %ld\n", message->chat->id);
-      printf("From id %ld, username: %s\n", message->from->id, message->from->username.c_str());
-      printf("Msg text %s\n", message->text.c_str());
+    send(message, "Hi, start!");
+    printf("Chat id %ld\n", message->chat->id);
+    printf("From id %ld, username: %s\n", message->from->id, message->from->username.c_str());
+    printf("Msg text %s\n", message->text.c_str());
 
-    } else {
-      cout << "Access denied for command: " << message->text << endl;
-    }
+    raymii::CommandResult r = raymii::Command::exec("echo 'Hello world!'");
+    cout << r << endl;
+    if (r.exitstatus == 0)
+      send(message, r.output);
+    else
+      send(message, "command execution error");
   });
+
+  evt.onCommand("reboot", std::bind(&PiBotApp::cmd_reboot, this, _1));
+  evt.onCommand("rebootcheck", std::bind(&PiBotApp::cmd_rebootcheck, this, _1));
 }
 
 int PiBotApp::start() {
-  clog << "in start()\n";
+  //clog << "in start()\n";
 
   signal(SIGINT, [](int s) {
     cout << "\nSIGINT got\n";
@@ -104,8 +115,14 @@ void PiBotApp::set_my_commands() {
   bot_.getApi().setMyCommands(cmds);
 }
 
-bool PiBotApp::is_user_allowed(const Message::Ptr& message) {
-  return config()->allowed_user_ids.count( message->from->id ) > 0;
+bool PiBotApp::user_allowed(const Message::Ptr& message) {
+  if (user_allowed_internal_(message)) {
+    cout << "Processing command: " << message->text << endl;
+    return true;
+  } else {
+    cout << "Access denied for command: " << message->text << endl;
+  }
+  return false;
 }
 
 void PiBotApp::send(const Message::Ptr& message, const string& res) {
