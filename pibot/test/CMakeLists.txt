@@ -33,8 +33,10 @@ target_link_libraries(test_pibot
   ${YAML_CPP_LIBRARIES}
   ${OPENSSL_LIBRARIES}
   ${Boost_LIBRARIES}
-  ${CURL_LIBRARIES}
 )
+if (CURL_FOUND)
+target_link_libraries(test_pibot ${CURL_LIBRARIES})
+endif()
 
 add_test(NAME test_pibot COMMAND test_pibot)
 

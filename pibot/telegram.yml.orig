@@ -6,4 +6,4 @@ AllowedUserIds:
   - 543211
   - 12345
 
-SleepInterval: 5
+SleepInterval: 600

@@ -48,9 +48,9 @@ void PiBotApp::startup() {
     if ( !user_allowed(message) ) return;
 
     send(message, "Hi, start!");
-    printf("Chat id %ld\n", message->chat->id);
-    printf("From id %ld, username: %s\n", message->from->id, message->from->username.c_str());
-    printf("Msg text %s\n", message->text.c_str());
+    cout << "Chat id " << message->chat->id << endl;
+    cout << "From id " << message->from->id << ", username: " << message->from->username << endl;
+    cout << "Msg text " << message->text << endl;
   });
 
   evt.onCommand("reboot", std::bind(&PiBotApp::cmd_reboot, this, _1));

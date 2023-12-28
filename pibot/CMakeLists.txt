@@ -10,7 +10,7 @@ set(Boost_USE_STATIC_LIBS ON)
 
 include(CTest)
 
-#find_package(Threads REQUIRED)
+find_package(Threads REQUIRED)
 find_package(yaml-cpp REQUIRED PATHS /home/ural/src/test/inst NO_DEFAULT_PATH)
 find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED PATHS /home/ural/src/test/inst/boost COMPONENTS system)
@@ -42,12 +42,14 @@ add_executable(pibot
 
 target_link_libraries(pibot
   /home/ural/src/test/tgbot-cpp/build/libTgBot.a
-  #${CMAKE_THREAD_LIBS_INIT}
+  ${CMAKE_THREAD_LIBS_INIT}
   ${YAML_CPP_LIBRARIES}
   ${OPENSSL_LIBRARIES}
   ${Boost_LIBRARIES}
-  ${CURL_LIBRARIES}
 )
+if (CURL_FOUND)
+target_link_libraries(pibot ${CURL_LIBRARIES})
+endif()
 
 add_subdirectory(test)
 enable_testing()
