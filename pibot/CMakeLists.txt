@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_LIBS ON)
 
-#include(CTest)
+include(CTest)
 
 #find_package(Threads REQUIRED)
 find_package(yaml-cpp REQUIRED PATHS /home/ural/src/test/inst NO_DEFAULT_PATH)
@@ -37,6 +37,7 @@ add_executable(pibot
   Poller.cpp
   Config.cpp
   PiCommands.cpp
+  PiUtils.cpp
 )
 
 target_link_libraries(pibot
@@ -48,6 +49,6 @@ target_link_libraries(pibot
   ${CURL_LIBRARIES}
 )
 
-#add_subdirectory(test)
-#enable_testing()
+add_subdirectory(test)
+enable_testing()
 

@@ -32,6 +32,15 @@ public:
 
   void cmd_reboot(TgBot::Message::Ptr message);
   void cmd_rebootcheck(TgBot::Message::Ptr message);
+  void cmd_status(TgBot::Message::Ptr message);
+  void cmd_restart(TgBot::Message::Ptr message);
+  void cmd_start(TgBot::Message::Ptr message);
+  void cmd_stop(TgBot::Message::Ptr message);
+
+  std::string param(const TgBot::Message::Ptr& message, unsigned int idx);
+  std::string param2(const TgBot::Message::Ptr& message) { return param(message, 2); }
+  void run_with_output(const TgBot::Message::Ptr& message, const std::string& cmd);
+  void run_without_output(const TgBot::Message::Ptr& message, const std::string& cmd);
 
 private:
   bool user_allowed_internal_(const TgBot::Message::Ptr& message) {

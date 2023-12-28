@@ -51,17 +51,14 @@ void PiBotApp::startup() {
     printf("Chat id %ld\n", message->chat->id);
     printf("From id %ld, username: %s\n", message->from->id, message->from->username.c_str());
     printf("Msg text %s\n", message->text.c_str());
-
-    raymii::CommandResult r = raymii::Command::exec("echo 'Hello world!'");
-    cout << r << endl;
-    if (r.exitstatus == 0)
-      send(message, r.output);
-    else
-      send(message, "command execution error");
   });
 
   evt.onCommand("reboot", std::bind(&PiBotApp::cmd_reboot, this, _1));
   evt.onCommand("rebootcheck", std::bind(&PiBotApp::cmd_rebootcheck, this, _1));
+  evt.onCommand("status", std::bind(&PiBotApp::cmd_status, this, _1));
+  evt.onCommand("restart", std::bind(&PiBotApp::cmd_restart, this, _1));
+  evt.onCommand("start", std::bind(&PiBotApp::cmd_start, this, _1));
+  evt.onCommand("stop", std::bind(&PiBotApp::cmd_stop, this, _1));
 }
 
 int PiBotApp::start() {

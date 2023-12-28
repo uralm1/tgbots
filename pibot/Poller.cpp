@@ -12,6 +12,8 @@
 
 namespace TgBot {
 
+constexpr bool POLLER_DEBUG = false;
+
 #define LONG_POLL_MAXCOUNT 10
 
 Poller::Poller(const Api* api, const EventHandler* eventHandler,
@@ -37,7 +39,8 @@ Poller::Poller(const Bot& bot,
 }
 
 void Poller::run() {
-  std::clog << (next_timeout_ > 0 ? "Long polling" : "Momentary") << " getUpdates()\n";
+  if constexpr (POLLER_DEBUG)
+    std::clog << (next_timeout_ > 0 ? "Long polling" : "Momentary") << " getUpdates()\n";
   //std::vector<Update::Ptr> updates
   auto updates = api_->getUpdates(lastUpdateId_, limit_, next_timeout_, allowUpdates_);
   //std::clog << "after getUpdates()\n";
@@ -69,7 +72,8 @@ void Poller::run() {
   //std::printf("next_count: %d\n", next_count_);
 
   if (next_timeout_ == 0) {
-    std::clog << "NO TRAFFIC SLEEP\n";
+    if constexpr (POLLER_DEBUG)
+      std::clog << "NO TRAFFIC SLEEP\n";
     std::this_thread::sleep_for(sleep_timeout_);
   }
 }
