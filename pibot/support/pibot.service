@@ -1,0 +1,19 @@
+[Unit]
+Description=Pibot service
+After=network-online.target
+#Wants=network-online.target
+
+[Service]
+Type=exec
+User=openhab
+Group=openhab
+ExecStart=/etc/pibot/pibot
+ExecStop=/bin/kill -2 $MAINPID
+WorkingDirectory=/etc/pibot
+Environment="LD_LIBRARY_PATH=/etc/pibot/lib"
+#KillSignal=SIGINT
+#Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
