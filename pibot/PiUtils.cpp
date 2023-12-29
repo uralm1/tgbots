@@ -6,9 +6,51 @@
 #include <string>
 #include <boost/tokenizer.hpp>
 #include <boost/token_functions.hpp>
+#include <vector>
+#include <map>
 
 using namespace std;
 using namespace TgBot;
+
+
+void PiBotApp::set_my_commands() {
+  vector<BotCommand::Ptr> cmds;
+
+  for (auto&& [c, desc] : map<string, string>{{"start", "starts an app"}}) {
+    BotCommand::Ptr cmd(new BotCommand);
+    cmd->command = c;
+    cmd->description = desc;
+    cmds.push_back(cmd);
+    //clog << "command: " << c << ", desc: " << desc << endl;
+  }
+  bot_.getApi().setMyCommands(cmds);
+}
+
+
+bool PiBotApp::user_allowed(const Message::Ptr& message) {
+  if (user_allowed_internal_(message)) {
+    cout << "Processing command: " << message->text << endl;
+    return true;
+  } else {
+    cout << "Access denied for command: " << message->text << endl;
+  }
+  return false;
+}
+
+
+void PiBotApp::send(const Message::Ptr& message, const string& res) {
+  int64_t to = config()->send_only_to_chat_id;
+  bot_.getApi().sendMessage(to == 0 ? message->chat->id : to, res);
+}
+
+void PiBotApp::reply(const Message::Ptr& message, const string& res) {
+  int64_t to = config()->send_only_to_chat_id;
+  bot_.getApi().sendMessage(to == 0 ? message->chat->id : to, res, false, message->messageId);
+}
+
+void PiBotApp::reply_error(const Message::Ptr& message) {
+  reply(message, "error");
+}
 
 
 string PiBotApp::param(const Message::Ptr& message, unsigned int idx) {
