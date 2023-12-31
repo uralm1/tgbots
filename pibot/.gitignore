@@ -1,5 +1,5 @@
 /build/
 /test/build/
 /.cache/
-/telegram.yml
+/pibot.yml
 *.swp

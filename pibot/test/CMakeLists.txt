@@ -13,7 +13,7 @@ add_executable(test_pibot
 
 include_directories(
   ..
-  /home/ural/src/test/tgbot-cpp/include
+  ${tgbot-cpp_DIR}/include
   ${OPENSSL_INCLUDE_DIR}
   ${Boost_INCLUDE_DIR}
   ${YAML_CPP_INCLUDE_DIR}
@@ -28,7 +28,7 @@ endif()
 target_link_libraries(test_pibot
   gtest
   gmock
-  /home/ural/src/test/tgbot-cpp/build/libTgBot.a
+  ${tgbot-cpp_DIR}/lib/libTgBot.a
   #${CMAKE_THREAD_LIBS_INIT}
   ${YAML_CPP_LIBRARIES}
   ${OPENSSL_LIBRARIES}

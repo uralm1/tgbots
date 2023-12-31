@@ -11,13 +11,17 @@ set(Boost_USE_STATIC_LIBS ON)
 include(CTest)
 
 find_package(Threads REQUIRED)
-find_package(yaml-cpp REQUIRED PATHS /home/ural/src/test/inst NO_DEFAULT_PATH)
+#use cmake -DCMAKE_PREFIX_PATH=/home/sv/src/cpp/inst
+find_package(yaml-cpp REQUIRED)
 find_package(OpenSSL REQUIRED)
-find_package(Boost REQUIRED PATHS /home/ural/src/test/inst/boost COMPONENTS system)
+#use cmake -DBoost_INCLUDE_DIR=/home/sv/src/cpp/boost/include
+find_package(Boost REQUIRED COMPONENTS system)
 find_package(CURL)
+#to find tgbot-cpp library define tgbot-cpp_DIR
+#cmake -Dtgbot-cpp_DIR=/home/sv/src/cpp/tgbot-cpp
 
 include_directories(
-  /home/ural/src/test/tgbot-cpp/include
+  ${tgbot-cpp_DIR}/include
   ${OPENSSL_INCLUDE_DIR}
   ${Boost_INCLUDE_DIR}
   ${YAML_CPP_INCLUDE_DIR}
@@ -41,7 +45,7 @@ add_executable(pibot
 )
 
 target_link_libraries(pibot
-  /home/ural/src/test/tgbot-cpp/build/libTgBot.a
+  ${tgbot-cpp_DIR}/lib/libTgBot.a
   ${CMAKE_THREAD_LIBS_INIT}
   ${YAML_CPP_LIBRARIES}
   ${OPENSSL_LIBRARIES}
