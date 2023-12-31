@@ -31,13 +31,6 @@ public:
 
   void set_my_commands();
 
-  void cmd_reboot(TgBot::Message::Ptr message);
-  void cmd_rebootcheck(TgBot::Message::Ptr message);
-  void cmd_status(TgBot::Message::Ptr message);
-  void cmd_restart(TgBot::Message::Ptr message);
-  void cmd_start(TgBot::Message::Ptr message);
-  void cmd_stop(TgBot::Message::Ptr message);
-
 private:
   YamlConfig config_;
 #ifdef HAVE_CURL

@@ -7,7 +7,7 @@ add_executable(test_pibot
   ../PiBotApp.cpp
   ../Poller.cpp
   ../Config.cpp
-  ../PiCommands.cpp
+  ../Commands.cpp
   ../Controller.cpp
 )
 

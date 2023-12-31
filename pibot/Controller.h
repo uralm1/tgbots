@@ -41,6 +41,14 @@ public:
   void run_with_output(const std::string& cmd);
   void run_without_output(const std::string& cmd);
 
+  //commands
+  void cmd_reboot(TgBot::Message::Ptr message);
+  void cmd_rebootcheck(TgBot::Message::Ptr message);
+  void cmd_status(TgBot::Message::Ptr message);
+  void cmd_restart(TgBot::Message::Ptr message);
+  void cmd_start(TgBot::Message::Ptr message);
+  void cmd_stop(TgBot::Message::Ptr message);
+
 protected:
   bool user_allowed_internal_();
 

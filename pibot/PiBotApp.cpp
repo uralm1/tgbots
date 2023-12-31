@@ -57,12 +57,12 @@ void PiBotApp::startup() {
     c->finish();
   });
 
-  evt.onCommand("reboot", std::bind(&PiBotApp::cmd_reboot, this, _1));
-  evt.onCommand("rebootcheck", std::bind(&PiBotApp::cmd_rebootcheck, this, _1));
-  evt.onCommand("status", std::bind(&PiBotApp::cmd_status, this, _1));
-  evt.onCommand("restart", std::bind(&PiBotApp::cmd_restart, this, _1));
-  evt.onCommand("start", std::bind(&PiBotApp::cmd_start, this, _1));
-  evt.onCommand("stop", std::bind(&PiBotApp::cmd_stop, this, _1));
+  evt.onCommand("reboot", std::bind(&Controller::cmd_reboot, &controller_, _1));
+  evt.onCommand("rebootcheck", std::bind(&Controller::cmd_rebootcheck, &controller_, _1));
+  evt.onCommand("status", std::bind(&Controller::cmd_status, &controller_, _1));
+  evt.onCommand("restart", std::bind(&Controller::cmd_restart, &controller_, _1));
+  evt.onCommand("start", std::bind(&Controller::cmd_start, &controller_, _1));
+  evt.onCommand("stop", std::bind(&Controller::cmd_stop, &controller_, _1));
 }
 
 int PiBotApp::start() {

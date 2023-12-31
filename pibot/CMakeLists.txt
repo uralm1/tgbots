@@ -40,7 +40,7 @@ add_executable(pibot
   PiBotApp.cpp
   Poller.cpp
   Config.cpp
-  PiCommands.cpp
+  Commands.cpp
   Controller.cpp
 )
 
