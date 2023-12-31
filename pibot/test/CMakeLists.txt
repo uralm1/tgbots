@@ -3,12 +3,12 @@
 
 add_executable(test_pibot
   main.cpp
-  PiUtilsTest.cpp
+  ControllerTest.cpp
   ../PiBotApp.cpp
   ../Poller.cpp
   ../Config.cpp
   ../PiCommands.cpp
-  ../PiUtils.cpp
+  ../Controller.cpp
 )
 
 include_directories(

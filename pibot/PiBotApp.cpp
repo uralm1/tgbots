@@ -2,8 +2,11 @@
 
 #include "Poller.h"
 
+#include <string>
 #include <iostream>
 #include <functional>
+#include <vector>
+#include <map>
 
 using namespace std;
 using namespace TgBot;
@@ -13,10 +16,11 @@ PiBotApp::PiBotApp(const std::string& config_file)
   : config_(config_file),
 #ifdef HAVE_CURL
   curlHttpClient_(),
-  bot_(config_.token, curlHttpClient_)
+  bot_(config_.token, curlHttpClient_),
 #else
-  bot_(config_.token)
+  bot_(config_.token),
 #endif
+  controller_(this)
 {
   //clog << "in PiBotApp constructor\n";
   startup();
@@ -31,10 +35,11 @@ void PiBotApp::startup() {
 
   //unknown commands call reply_error()
   evt.onUnknownCommand([this](Message::Ptr message) {
+    auto c = controller(message);
     //access check
-    if ( user_allowed_internal_(message) ) {
+    if ( c->user_allowed_internal_() ) {
       cout << "Unknown command: " << message->text << endl;
-      reply_error(message);
+      c->reply_error();
     } else {
       //cout << "Access denied for unknown command: " << message->text << endl;
     }
@@ -42,12 +47,14 @@ void PiBotApp::startup() {
 
   //commands
   evt.onCommand("start", [this](Message::Ptr message) {
-    if ( !user_allowed(message) ) return;
+    auto c = controller(message);
+    if ( !c->user_allowed() ) return;
 
-    send(message, "Hi, start!");
+    c->send("Hi, start!");
     cout << "Chat id " << message->chat->id << endl;
     cout << "From id " << message->from->id << ", username: " << message->from->username << endl;
     cout << "Msg text " << message->text << endl;
+    c->finish();
   });
 
   evt.onCommand("reboot", std::bind(&PiBotApp::cmd_reboot, this, _1));
@@ -97,5 +104,19 @@ int PiBotApp::start() {
   }
 
   return 0;
+}
+
+
+void PiBotApp::set_my_commands() {
+  vector<BotCommand::Ptr> cmds;
+
+  for (auto&& [c, desc] : map<string, string>{{"start", "starts an app"}}) {
+    BotCommand::Ptr cmd(new BotCommand);
+    cmd->command = c;
+    cmd->description = desc;
+    cmds.push_back(cmd);
+    //clog << "command: " << c << ", desc: " << desc << endl;
+  }
+  bot_.getApi().setMyCommands(cmds);
 }
 

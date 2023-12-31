@@ -8,78 +8,90 @@ using namespace TgBot;
 
 
 void PiBotApp::cmd_reboot(Message::Ptr message) {
-  if ( !user_allowed(message) ) return;
+  auto c = controller(message);
+  if ( !c->user_allowed() ) return;
 
-  send(message, "Reboot command accepted.");
-  run_without_output(message, "/etc/openhab2/misc/reboot.sh");
+  c->send("Reboot command accepted.");
+  c->run_without_output("/etc/openhab2/misc/reboot.sh");
+  c->finish();
 }
 
 void PiBotApp::cmd_rebootcheck(Message::Ptr message) {
-  if ( !user_allowed(message) ) return;
+  auto c = controller(message);
+  if ( !c->user_allowed() ) return;
 
-  send(message, "Reboot (with fsck) command accepted.");
-  run_without_output(message, "/etc/openhab2/misc/reboot_check.sh");
+  c->send("Reboot (with fsck) command accepted.");
+  c->run_without_output("/etc/openhab2/misc/reboot_check.sh");
+  c->finish();
 }
 
 void PiBotApp::cmd_status(Message::Ptr message) {
-  if ( !user_allowed(message) ) return;
+  auto c = controller(message);
+  if ( !c->user_allowed() ) return;
 
-  string service = param2(message);
+  string service = c->param2();
   if (service == "") {
-    run_with_output(message, "uptime;echo;free");
+    c->run_with_output("uptime;echo;free");
 
   } else if (service == "ip") {
-    run_with_output(message, "ip addr");
+    c->run_with_output("ip addr");
 
   } else if (service == "df") {
-    run_with_output(message, "df");
+    c->run_with_output("df");
 
   } else if (service == "apache2" ||
       service == "openhab2" ||
       service == "motion" ||
       service == "sshd") {
-    run_with_output(message, "systemctl -q --no-ask-password --no-pager status " + service);
+    c->run_with_output("systemctl -q --no-ask-password --no-pager status " + service);
   } else {
-    send(message, "Unknown status (empty/ip/df/service).");
+    c->send("Unknown status (empty/ip/df/service).");
   }
+  c->finish();
 }
 
 void PiBotApp::cmd_restart(Message::Ptr message) {
-  if ( !user_allowed(message) ) return;
+  auto c = controller(message);
+  if ( !c->user_allowed() ) return;
 
-  string service = param2(message);
+  string service = c->param2();
   if (service == "apache2" ||
       service == "openhab2" ||
       service == "motion") {
-    run_with_output(message, "systemctl -q --no-ask-password --no-pager restart " + service);
+    c->run_with_output("systemctl -q --no-ask-password --no-pager restart " + service);
   } else {
-    send(message, "Command error.");
+    c->send("Command error.");
   }
+  c->finish();
 }
 
 void PiBotApp::cmd_start(Message::Ptr message) {
-  if ( !user_allowed(message) ) return;
+  auto c = controller(message);
+  if ( !c->user_allowed() ) return;
 
-  string service = param2(message);
+  string service = c->param2();
   if (service == "apache2" ||
       service == "openhab2" ||
       service == "motion") {
-    run_with_output(message, "systemctl -q --no-ask-password --no-pager start " + service);
+    c->run_with_output("systemctl -q --no-ask-password --no-pager start " + service);
   } else {
-    send(message, "Command error.");
+    c->send("Command error.");
   }
+  c->finish();
 }
 
 void PiBotApp::cmd_stop(Message::Ptr message) {
-  if ( !user_allowed(message) ) return;
+  auto c = controller(message);
+  if ( !c->user_allowed() ) return;
 
-  string service = param2(message);
+  string service = c->param2();
   if (service == "apache2" ||
       service == "openhab2" ||
       service == "motion") {
-    run_with_output(message, "systemctl -q --no-ask-password --no-pager stop " + service);
+    c->run_with_output("systemctl -q --no-ask-password --no-pager stop " + service);
   } else {
-    send(message, "Command error.");
+    c->send("Command error.");
   }
+  c->finish();
 }
 

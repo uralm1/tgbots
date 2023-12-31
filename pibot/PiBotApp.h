@@ -3,6 +3,7 @@
 //#define HAVE_CURL
 
 #include "Config.h"
+#include "Controller.h"
 
 #include <tgbot/tgbot.h>
 
@@ -23,12 +24,12 @@ public:
 
   TgBot::Bot* bot() { return &bot_; }
   Config* config() { return &config_; }
+  Controller* controller(TgBot::Message::Ptr message) {
+    controller_.message(std::move(message));
+    return &controller_;
+  }
 
   void set_my_commands();
-  bool user_allowed(const TgBot::Message::Ptr& message);
-  void send(const TgBot::Message::Ptr& message, const std::string& res);
-  void reply(const TgBot::Message::Ptr& message, const std::string& res);
-  void reply_error(const TgBot::Message::Ptr& message);
 
   void cmd_reboot(TgBot::Message::Ptr message);
   void cmd_rebootcheck(TgBot::Message::Ptr message);
@@ -37,22 +38,13 @@ public:
   void cmd_start(TgBot::Message::Ptr message);
   void cmd_stop(TgBot::Message::Ptr message);
 
-  std::string param(const TgBot::Message::Ptr& message, unsigned int idx);
-  std::string param2(const TgBot::Message::Ptr& message) { return param(message, 2); }
-  void run_with_output(const TgBot::Message::Ptr& message, const std::string& cmd);
-  void run_without_output(const TgBot::Message::Ptr& message, const std::string& cmd);
-
-private:
-  bool user_allowed_internal_(const TgBot::Message::Ptr& message) {
-    return config_.allowed_user_ids.count( message->from->id ) > 0;
-  }
-
 private:
   YamlConfig config_;
 #ifdef HAVE_CURL
   TgBot::CurlHttpClient curlHttpClient_;
 #endif
   TgBot::Bot bot_;
+  Controller controller_;
 
 }; //class PiBotApp
 

@@ -41,7 +41,7 @@ add_executable(pibot
   Poller.cpp
   Config.cpp
   PiCommands.cpp
-  PiUtils.cpp
+  Controller.cpp
 )
 
 target_link_libraries(pibot
