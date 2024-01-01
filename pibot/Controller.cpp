@@ -28,7 +28,6 @@ inline bool Controller::user_allowed_internal_() {
 
 bool Controller::user_allowed() {
   if (user_allowed_internal_()) {
-    cout << "Processing command: " << message_->text << endl;
     return true;
   } else {
     cout << "Access denied for command: " << message_->text << endl;
@@ -79,7 +78,7 @@ void Controller::run_with_output(const string& cmd) {
   //cout << r << endl;
   cout << "Command status: " << r.exitstatus << endl;
   if (r.exitstatus == 0)
-    send(r.output);
+    send("```" + r.output + "```");
   else
     send("Command execution error (status: " + to_string(r.exitstatus) + ").");
 }

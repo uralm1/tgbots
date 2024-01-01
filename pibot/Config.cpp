@@ -1,6 +1,5 @@
 #include "Config.h"
 
-//#include "yaml-cpp/node/detail/iterator_fwd.h"
 #include "yaml-cpp/yaml.h"
 
 #include <stdexcept>
@@ -38,8 +37,8 @@ void YamlConfig::load(const std::string& config_file) {
       if (smk.IsMap()) {
         for (YAML::const_iterator it = smk.begin(); it != smk.end(); ++it) {
           TgBot::BotCommand::Ptr cmd(new TgBot::BotCommand);
-          cmd->command = it->first.as<std::string>();
-          cmd->description = it->second.as<std::string>();
+          cmd->command = it->first.as<string>();
+          cmd->description = it->second.as<string>();
           set_my_commands.push_back(cmd);
           //clog << "command: " << cmd->command << ", desc: " << cmd->description << endl;
         }
@@ -48,11 +47,48 @@ void YamlConfig::load(const std::string& config_file) {
       }
     }
 
+    parse_commands(config["Commands"], commands);
+
   } catch(const std::runtime_error& e) {
     cerr << "Config error: " << e.what() << endl;
     exit(EXIT_FAILURE);
   }
 
   assert(!token.empty());
+}
+
+
+void YamlConfig::parse_commands(const YAML::Node& node, commands_map& to_map, int lvl) {
+  if (node.IsDefined()) {
+    if (node.IsMap()) {
+      for (YAML::const_iterator it = node.begin(); it != node.end(); ++it) {
+        auto cmd = it->first.as<string>();
+        const auto& cmd_node = node[cmd];
+        //clog << (lvl < 2 ? "command: ":"subcommand: ") << cmd << endl;
+        if (cmd_node.IsMap()) {
+          auto pre_send = cmd_node["PreSend"].as<string>(string{});
+          auto run_without_output = cmd_node["RunWithoutOutput"].as<string>(string{});
+          auto run_with_output = cmd_node["RunWithOutput"].as<string>(string{});
+          //clog << "pre_send: " << pre_send << ", run_without_output: " << run_without_output << ", run_with_output: " << run_with_output << endl;
+          CommandParam _c;
+          _c.pre_send = pre_send;
+          _c.run_without_output = run_without_output;
+          _c.run_with_output = run_with_output;
+
+          if (lvl < 2) {
+            const auto& subcmd_node = cmd_node["SubCommands"];
+            parse_commands(subcmd_node, _c.subcommands, lvl + 1);
+          }
+
+          to_map.emplace(cmd, _c);
+
+        } else {
+          throw std::runtime_error("Command " + cmd + " must be a Map.");
+        }
+      }
+    } else {
+      throw std::runtime_error("Commands must be a Map.");
+    }
+  }
 }
 

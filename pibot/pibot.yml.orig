@@ -12,11 +12,11 @@ SleepInterval: 600
 
 Commands:
   reboot:
-    pre_send: "Reboot command accepted."
-    run_without_output: /etc/openhab2/misc/reboot.sh
+    PreSend: "Reboot command accepted."
+    RunWithoutOutput: /etc/openhab2/misc/reboot.sh
   rebootcheck:
-    pre_send: "Reboot (with fsck) command accepted."
-    run_without_output: /etc/openhab2/misc/reboot_check.sh
+    PreSend: "Reboot (with fsck) command accepted."
+    RunWithoutOutput: /etc/openhab2/misc/reboot_check.sh
   status:
-    run_with_output: uptime;echo;free
+    RunWithOutput: uptime;echo;free
 

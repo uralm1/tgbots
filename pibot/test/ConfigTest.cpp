@@ -18,15 +18,28 @@ public:
 
   static void SetUpTestSuite() {
     ofstream ofs(testfile1);
-    ofs << "Token: 123456:asdfghjkl" << endl;
-    ofs << "SendOnlyToChatId: 654321" << endl;
-    ofs << "AllowedUserIds:" << endl;
-    ofs << "  - 1111" << endl;
-    ofs << "  - 2222" << endl;
-    ofs << "SleepInterval: 123" << endl;
-    ofs << "SetMyCommands:" << endl;
-    ofs << "  test1: test1 description" << endl;
-    ofs << "  test2: \"test2 description\"" << endl;
+    ofs << "Token: 123456:asdfghjkl\n";
+    ofs << "SendOnlyToChatId: 654321\n";
+    ofs << "AllowedUserIds:\n";
+    ofs << "  - 1111\n";
+    ofs << "  - 2222\n";
+    ofs << "SleepInterval: 123\n";
+    ofs << "SetMyCommands:\n";
+    ofs << "  test1: test1 description\n";
+    ofs << "  test2: \"test2 description\"\n";
+    ofs << "Commands:\n";
+    ofs << "  command1:\n";
+    ofs << "    PreSend: command1 accepted.\n";
+    ofs << "    RunWithoutOutput: /bin/true\n";
+    ofs << "    SubCommands:\n";
+    ofs << "      subcommand1:\n";
+    ofs << "        PreSend: subcommand1 accepted.\n";
+    ofs << "        RunWithoutOutput: /bin/true1\n";
+    ofs << "      subcommand2:\n";
+    ofs << "        RunWithOutput: /bin/false1\n";
+    ofs << "  command2:\n";
+    ofs << "    RunWithOutput: /bin/false\n";
+    ofs << endl;
   }
 
   static void TearDownTestSuite() {
@@ -60,5 +73,37 @@ TEST_F(ConfigTest, Test1) {
   EXPECT_THAT(*yc->set_my_commands[0], testing::FieldsAre("test1", "test1 description")) << "set_my_commands[0]";
   EXPECT_THAT(*yc->set_my_commands[1], testing::FieldsAre("test2", "test2 description")) << "set_my_commands[0]";
 
+  EXPECT_THAT(yc->commands, testing::SizeIs(2)) << "commands size";
+
+  EXPECT_THAT(yc->commands, testing::Contains(testing::Key("command1"))) << "has command1";
+  EXPECT_THAT(yc->commands, testing::Contains(testing::Key("command2"))) << "has command2";
+
+  Config::CommandParam c1 = yc->commands["command1"];
+  EXPECT_THAT(c1, testing::Field(&Config::CommandParam::pre_send, testing::StrEq("command1 accepted."))) << "command1 pre_send";
+  EXPECT_THAT(c1, testing::Field(&Config::CommandParam::run_without_output, testing::StrEq("/bin/true"))) << "command1 run_without_output";
+  EXPECT_THAT(c1, testing::Field(&Config::CommandParam::run_with_output, testing::StrEq(""))) << "command1 run_with_output";
+  EXPECT_THAT(c1, testing::Field(&Config::CommandParam::subcommands, testing::SizeIs(2))) << "command1 has 2 subcommands";
+
+  EXPECT_THAT(c1.subcommands, testing::Contains(testing::Key("subcommand1"))) << "has subcommand1";
+  EXPECT_THAT(c1.subcommands, testing::Contains(testing::Key("subcommand2"))) << "has subcommand2";
+
+  Config::CommandParam sc1 = c1.subcommands["subcommand1"];
+  EXPECT_THAT(sc1, testing::Field(&Config::CommandParam::pre_send, testing::StrEq("subcommand1 accepted."))) << "subcommand1 pre_send";
+  EXPECT_THAT(sc1, testing::Field(&Config::CommandParam::run_without_output, testing::StrEq("/bin/true1"))) << "subcommand1 run_without_output";
+  EXPECT_THAT(sc1, testing::Field(&Config::CommandParam::run_with_output, testing::StrEq(""))) << "subcommand1 run_with_output";
+  EXPECT_THAT(sc1, testing::Field(&Config::CommandParam::subcommands, testing::IsEmpty())) << "subcommand1 no subcommands";
+
+  Config::CommandParam sc2 = c1.subcommands["subcommand2"];
+  EXPECT_THAT(sc2, testing::Field(&Config::CommandParam::pre_send, testing::StrEq(""))) << "subcommand2 pre_send";
+  EXPECT_THAT(sc2, testing::Field(&Config::CommandParam::run_without_output, testing::StrEq(""))) << "subcommand2 run_without_output";
+  EXPECT_THAT(sc2, testing::Field(&Config::CommandParam::run_with_output, testing::StrEq("/bin/false1"))) << "subcommand2 run_with_output";
+  EXPECT_THAT(sc2, testing::Field(&Config::CommandParam::subcommands, testing::IsEmpty())) << "subcommand2 no subcommands";
+
+
+  Config::CommandParam c2 = yc->commands["command2"];
+  EXPECT_THAT(c2, testing::Field(&Config::CommandParam::pre_send, testing::StrEq(""))) << "command2 pre_send";
+  EXPECT_THAT(c2, testing::Field(&Config::CommandParam::run_without_output, testing::StrEq(""))) << "command2 run_without_output";
+  EXPECT_THAT(c2, testing::Field(&Config::CommandParam::run_with_output, testing::StrEq("/bin/false"))) << "command2 run_with_output";
+  EXPECT_THAT(c2, testing::Field(&Config::CommandParam::subcommands, testing::IsEmpty())) << "command2 no subcommands";
 }
 

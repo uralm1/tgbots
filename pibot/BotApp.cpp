@@ -6,7 +6,6 @@
 #include <iostream>
 #include <functional>
 #include <vector>
-#include <map>
 
 using namespace std;
 using namespace TgBot;
@@ -46,6 +45,7 @@ void BotApp::startup() {
   });
 
   //commands
+  //this is playground command
   evt.onCommand("start", [this](Message::Ptr message) {
     auto c = controller(message);
     if ( !c->user_allowed() ) return;
@@ -57,12 +57,10 @@ void BotApp::startup() {
     c->finish();
   });
 
-  evt.onCommand("reboot", std::bind(&Controller::cmd_reboot, &controller_, _1));
-  evt.onCommand("rebootcheck", std::bind(&Controller::cmd_rebootcheck, &controller_, _1));
-  evt.onCommand("status", std::bind(&Controller::cmd_status, &controller_, _1));
-  evt.onCommand("restart", std::bind(&Controller::cmd_restart, &controller_, _1));
-  evt.onCommand("start", std::bind(&Controller::cmd_start, &controller_, _1));
-  evt.onCommand("stop", std::bind(&Controller::cmd_stop, &controller_, _1));
+  for (const auto& [cmd, params] : config_.commands)
+    evt.onCommand(cmd, std::bind(&Controller::cmd_handler, &controller_, params, _1));
+
+  //evt.onCommand("additional_command", std::bind(&Controller::cmd_additional, &controller_, _1));
 }
 
 int BotApp::start() {

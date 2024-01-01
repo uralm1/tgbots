@@ -25,8 +25,20 @@ public:
   std::chrono::seconds sleep_interval = std::chrono::seconds{10};
   std::vector<TgBot::BotCommand::Ptr> set_my_commands;
 
+  struct CommandParam;
+  using commands_map = std::map<std::string, CommandParam>;
+  struct CommandParam {
+    std::string pre_send;
+    std::string run_without_output;
+    std::string run_with_output;
+    commands_map subcommands;
+  };
+  commands_map commands;
+
 }; //class Config
 
+
+namespace YAML { class Node; }
 
 class YamlConfig : public Config {
 public:
@@ -37,6 +49,7 @@ public:
 
 private:
   void load(const std::string& config_file);
+  void parse_commands(const YAML::Node& node, commands_map& to_map, int lvl = 1);
 
 }; //class YamlConfig
 
