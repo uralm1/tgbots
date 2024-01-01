@@ -50,7 +50,7 @@ void BotApp::startup() {
     auto c = controller(message);
     if ( !c->user_allowed() ) return;
 
-    c->send("Hi, start!");
+    c->send("Hi, start! ```Monospace test```");
     cout << "Chat id " << message->chat->id << endl;
     cout << "From id " << message->from->id << ", username: " << message->from->username << endl;
     cout << "Msg text " << message->text << endl;
@@ -83,7 +83,7 @@ int BotApp::start() {
 
     cout << "Bot username: " << bot_.getApi().getMe()->username << endl;
 
-    if (config_.set_my_commands) {
+    if (config_.set_my_commands.size() > 0) {
       cout << "Updating bot command list.\n";
       set_my_commands();
     }
@@ -108,15 +108,6 @@ int BotApp::start() {
 
 
 void BotApp::set_my_commands() {
-  vector<BotCommand::Ptr> cmds;
-
-  for (auto&& [c, desc] : map<string, string>{{"start", "starts an app"}}) {
-    BotCommand::Ptr cmd(new BotCommand);
-    cmd->command = c;
-    cmd->description = desc;
-    cmds.push_back(cmd);
-    //clog << "command: " << c << ", desc: " << desc << endl;
-  }
-  bot_.getApi().setMyCommands(cmds);
+  bot_.getApi().setMyCommands(config_.set_my_commands);
 }
 

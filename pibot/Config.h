@@ -1,8 +1,12 @@
 #pragma once
 
+#include <tgbot/tgbot.h>
+
 #include <string>
 #include <unordered_set>
 #include <chrono>
+#include <map>
+#include <vector>
 
 class Config {
 public:
@@ -17,9 +21,9 @@ public:
 public:
   std::string token;
   int64_t send_only_to_chat_id = 0;
-  bool set_my_commands = false;
   std::unordered_set<int64_t> allowed_user_ids;
   std::chrono::seconds sleep_interval = std::chrono::seconds{10};
+  std::vector<TgBot::BotCommand::Ptr> set_my_commands;
 
 }; //class Config
 

@@ -15,7 +15,6 @@ void YamlConfig::load(const std::string& config_file) {
 
     token = config["Token"].as<string>();
     send_only_to_chat_id = config["SendOnlyToChatId"].as<int64_t>(0);
-    set_my_commands = config["SetMyCommands"].as<bool>(false);
 
     const auto& aui = config["AllowedUserIds"];
     if (aui.IsDefined()) {
@@ -34,8 +33,23 @@ void YamlConfig::load(const std::string& config_file) {
 
     sleep_interval = std::chrono::seconds(config["SleepInterval"].as<unsigned long>(10));
 
-  } catch(const exception& ex) {
-    cerr << "Config error: " << ex.what() << endl;
+    const auto& smk = config["SetMyCommands"];
+    if (smk.IsDefined()) {
+      if (smk.IsMap()) {
+        for (YAML::const_iterator it = smk.begin(); it != smk.end(); ++it) {
+          TgBot::BotCommand::Ptr cmd(new TgBot::BotCommand);
+          cmd->command = it->first.as<std::string>();
+          cmd->description = it->second.as<std::string>();
+          set_my_commands.push_back(cmd);
+          //clog << "command: " << cmd->command << ", desc: " << cmd->description << endl;
+        }
+      } else {
+        throw std::runtime_error("SetMyCommands must be a Map.");
+      }
+    }
+
+  } catch(const std::runtime_error& e) {
+    cerr << "Config error: " << e.what() << endl;
     exit(EXIT_FAILURE);
   }
 

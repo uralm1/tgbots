@@ -1,9 +1,22 @@
 ---
 Token: 123456:qwertyuiop
-SetMyCommands: false
 #SendOnlyToChatId: 654321
 AllowedUserIds:
   - 543211
   - 12345
 
 SleepInterval: 600
+
+#SetMyCommands:
+#  start: "Starts an app"
+
+Commands:
+  reboot:
+    pre_send: "Reboot command accepted."
+    run_without_output: /etc/openhab2/misc/reboot.sh
+  rebootcheck:
+    pre_send: "Reboot (with fsck) command accepted."
+    run_without_output: /etc/openhab2/misc/reboot_check.sh
+  status:
+    run_with_output: uptime;echo;free
+

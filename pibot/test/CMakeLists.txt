@@ -4,7 +4,9 @@
 add_executable(test_pibot
   main.cpp
   ControllerTest.cpp
+  ConfigTest.cpp
   ../Controller.cpp
+  ../Config.cpp
 )
 
 include_directories(
@@ -14,10 +16,10 @@ include_directories(
   ${Boost_INCLUDE_DIR}
   ${YAML_CPP_INCLUDE_DIR}
 )
-if (CURL_FOUND)
-    include_directories(${CURL_INCLUDE_DIRS})
-    add_definitions(-DHAVE_CURL)
-endif()
+#if (CURL_FOUND)
+#    include_directories(${CURL_INCLUDE_DIRS})
+#    add_definitions(-DHAVE_CURL)
+#endif()
 
 #link_directories(../build/lib)
 
@@ -30,9 +32,9 @@ target_link_libraries(test_pibot
   ${OPENSSL_LIBRARIES}
   ${Boost_LIBRARIES}
 )
-if (CURL_FOUND)
-target_link_libraries(test_pibot ${CURL_LIBRARIES})
-endif()
+#if (CURL_FOUND)
+#target_link_libraries(test_pibot ${CURL_LIBRARIES})
+#endif()
 
 add_test(NAME test_pibot COMMAND test_pibot)
 

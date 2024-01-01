@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 //#include <gmock/gmock.h>
 
-#include "BotApp.h"
+#include "Controller.h"
 
 #include <memory>
 
