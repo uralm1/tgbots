@@ -1,9 +1,16 @@
 #!/bin/bash
 
+set -e
+
 BOOST_DIR=/home/sv/src/cpp/boost
 LIBINST_PREFIX=/home/sv/src/cpp/inst
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$LIBINST_PREFIX -DBoost_INCLUDE_DIR=$BOOST_DIR/include -Dtgbot-cpp_DIR=$LIBINST_PREFIX
-#cmake --build build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_PREFIX_PATH=$LIBINST_PREFIX \
+  -DBoost_INCLUDE_DIR=$BOOST_DIR/include \
+  -Dtgbot-cpp_DIR=$LIBINST_PREFIX
+#  -DBUILD_TESTING=OFF
+
+cmake --build build
 #cmake --install build
 

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 //#include <gmock/gmock.h>
 
-#include "PiBotApp.h"
+#include "BotApp.h"
 
 #include <memory>
 
@@ -9,16 +9,15 @@ using namespace std;
 
 class ControllerTest: public testing::Test {
 public:
-  unique_ptr<PiBotApp> app;
-  Controller* c;
+  unique_ptr<Controller> c;
   TgBot::Message::Ptr msg;
 
   void SetUp() {
-    app = make_unique<PiBotApp>("../pibot.yml");
+    c = make_unique<Controller>(nullptr);
     msg = make_shared<TgBot::Message>();
-    c = app->controller(msg);
+    c->message(msg);
   }
-  void TearDown() { c->finish(); app.reset(); }
+  void TearDown() { c->finish(); c.reset(); }
 };
 
 TEST_F(ControllerTest, ParamTest) {

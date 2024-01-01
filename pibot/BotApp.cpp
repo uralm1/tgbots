@@ -1,4 +1,4 @@
-#include "PiBotApp.h"
+#include "BotApp.h"
 
 #include "Poller.h"
 
@@ -12,7 +12,7 @@ using namespace std;
 using namespace TgBot;
 
 
-PiBotApp::PiBotApp(const std::string& config_file)
+BotApp::BotApp(const std::string& config_file)
   : config_(config_file),
 #ifdef HAVE_CURL
   curlHttpClient_(),
@@ -26,7 +26,7 @@ PiBotApp::PiBotApp(const std::string& config_file)
   startup();
 }
 
-void PiBotApp::startup() {
+void BotApp::startup() {
   //clog << "in startup()\n";
 
   using namespace std::placeholders;
@@ -65,7 +65,7 @@ void PiBotApp::startup() {
   evt.onCommand("stop", std::bind(&Controller::cmd_stop, &controller_, _1));
 }
 
-int PiBotApp::start() {
+int BotApp::start() {
   //clog << "in start()\n";
 
   signal(SIGINT, [](int s) {
@@ -107,7 +107,7 @@ int PiBotApp::start() {
 }
 
 
-void PiBotApp::set_my_commands() {
+void BotApp::set_my_commands() {
   vector<BotCommand::Ptr> cmds;
 
   for (auto&& [c, desc] : map<string, string>{{"start", "starts an app"}}) {

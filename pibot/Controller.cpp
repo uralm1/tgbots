@@ -1,6 +1,6 @@
 #include "Controller.h"
 
-#include "PiBotApp.h"
+#include "BotApp.h"
 #include "Config.h"
 
 #include "command.h"
@@ -15,7 +15,7 @@
 using namespace std;
 using namespace TgBot;
 
-Controller::Controller(PiBotApp* app) : app_(app), bot_(app_->bot()) {
+Controller::Controller(BotApp* app) : app_(app), bot_(app_->bot()) {
   //clog << "in Controller constructor\n";
 }
 

@@ -1,5 +1,5 @@
 #include "Controller.h"
-#include "PiBotApp.h"
+#include "BotApp.h"
 
 #include <string>
 #include <iostream>

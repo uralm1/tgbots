@@ -37,7 +37,7 @@ link_directories(
 
 add_executable(pibot
   main.cpp
-  PiBotApp.cpp
+  BotApp.cpp
   Poller.cpp
   Config.cpp
   Commands.cpp
@@ -55,6 +55,8 @@ if (CURL_FOUND)
 target_link_libraries(pibot ${CURL_LIBRARIES})
 endif()
 
+if (BUILD_TESTING)
 add_subdirectory(test)
 enable_testing()
+endif()
 

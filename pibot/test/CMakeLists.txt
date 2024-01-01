@@ -4,10 +4,6 @@
 add_executable(test_pibot
   main.cpp
   ControllerTest.cpp
-  ../PiBotApp.cpp
-  ../Poller.cpp
-  ../Config.cpp
-  ../Commands.cpp
   ../Controller.cpp
 )
 
@@ -29,7 +25,7 @@ target_link_libraries(test_pibot
   gtest
   gmock
   ${tgbot-cpp_DIR}/lib/libTgBot.a
-  #${CMAKE_THREAD_LIBS_INIT}
+  ${CMAKE_THREAD_LIBS_INIT}
   ${YAML_CPP_LIBRARIES}
   ${OPENSSL_LIBRARIES}
   ${Boost_LIBRARIES}

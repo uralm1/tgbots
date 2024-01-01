@@ -4,16 +4,16 @@
 
 //#include <iostream>
 
-class PiBotApp;
+class BotApp;
 class Config;
 
 
 class Controller {
 public:
-  Controller(PiBotApp* app);
+  Controller(BotApp* app);
   virtual ~Controller() { /*std::clog << "in Controller destructor\n";*/ }
 
-  PiBotApp* app() { return app_; }
+  BotApp* app() { return app_; }
   TgBot::Bot* bot() { return bot_; }
   Config* config();
 
@@ -53,10 +53,10 @@ protected:
   bool user_allowed_internal_();
 
 private:
-  PiBotApp* app_;
+  BotApp* app_;
   TgBot::Bot* bot_;
   TgBot::Message::Ptr message_;
 
-friend class PiBotApp;
+friend class BotApp;
 }; //class Controller
 

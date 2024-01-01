@@ -11,13 +11,13 @@
 //#include <iostream>
 
 
-class PiBotApp {
+class BotApp {
 public:
-  PiBotApp(const std::string& config_file);
-  PiBotApp(const PiBotApp&) = delete;
-  PiBotApp& operator=(const PiBotApp&) = delete;
+  BotApp(const std::string& config_file);
+  BotApp(const BotApp&) = delete;
+  BotApp& operator=(const BotApp&) = delete;
 
-  virtual ~PiBotApp() { /*std::clog << "in PiBotApp destructor\n";*/ }
+  virtual ~BotApp() { /*std::clog << "in PiBotApp destructor\n";*/ }
 
   void startup();
   int start();
@@ -39,5 +39,5 @@ private:
   TgBot::Bot bot_;
   Controller controller_;
 
-}; //class PiBotApp
+}; //class BotApp
 

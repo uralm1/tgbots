@@ -1,4 +1,4 @@
-#include "PiBotApp.h"
+#include "BotApp.h"
 
 #include <iostream>
 #include <cstring>
@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
   if (argc >= 2 &&
       (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0 ||
        argc > 2)) {
-    cout << "Help: sbot [pibot.yml]" << endl;
+    cout << "Help: pibot [pibot.yml]" << endl;
     exit(EXIT_SUCCESS);
   }
 
@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
     config_file = "pibot.yml";
   }
 
-  static PiBotApp app(config_file);
+  static BotApp app(config_file);
   return app.start();
 }
 
