@@ -32,6 +32,7 @@ void YamlConfig::load(const std::string& config_file) {
 
     sleep_interval = std::chrono::seconds(config["SleepInterval"].as<unsigned long>(10));
 
+    //set_my_commands default false
     const auto& smk = config["SetMyCommands"];
     if (smk.IsDefined()) {
       if (smk.IsMap()) {
@@ -39,11 +40,16 @@ void YamlConfig::load(const std::string& config_file) {
           TgBot::BotCommand::Ptr cmd(new TgBot::BotCommand);
           cmd->command = it->first.as<string>();
           cmd->description = it->second.as<string>();
-          set_my_commands.push_back(cmd);
+          my_commands.push_back(cmd);
           //clog << "command: " << cmd->command << ", desc: " << cmd->description << endl;
         }
+        set_my_commands = true;
+      } else if (smk.IsScalar() && smk.as<string>(string{}) == "clear") {
+        //we should reset SetMyCommands for bot
+        my_commands.clear();
+        set_my_commands = true;
       } else {
-        throw std::runtime_error("SetMyCommands must be a Map.");
+        throw std::runtime_error("SetMyCommands must be a Map or Scalar=clear.");
       }
     }
 
@@ -59,19 +65,22 @@ void YamlConfig::load(const std::string& config_file) {
 
 
 void YamlConfig::parse_commands(const YAML::Node& node, commands_map& to_map, int lvl) {
+  const string _sub{ lvl > 1 ? "Sub" : "" };
   if (node.IsDefined()) {
     if (node.IsMap()) {
       for (YAML::const_iterator it = node.begin(); it != node.end(); ++it) {
         auto cmd = it->first.as<string>();
         const auto& cmd_node = node[cmd];
-        //clog << (lvl < 2 ? "command: ":"subcommand: ") << cmd << endl;
+        //clog << _sub + "Command: " << cmd << endl;
         if (cmd_node.IsMap()) {
           auto pre_send = cmd_node["PreSend"].as<string>(string{});
+          auto post_send = cmd_node["PostSend"].as<string>(string{});
           auto run_without_output = cmd_node["RunWithoutOutput"].as<string>(string{});
           auto run_with_output = cmd_node["RunWithOutput"].as<string>(string{});
-          //clog << "pre_send: " << pre_send << ", run_without_output: " << run_without_output << ", run_with_output: " << run_with_output << endl;
+          //clog << "pre_send: " << pre_send << ", post_send: " << post_send << ", run_without_output: " << run_without_output << ", run_with_output: " << run_with_output << endl;
           CommandParam _c;
           _c.pre_send = pre_send;
+          _c.post_send = post_send;
           _c.run_without_output = run_without_output;
           _c.run_with_output = run_with_output;
 
@@ -83,12 +92,15 @@ void YamlConfig::parse_commands(const YAML::Node& node, commands_map& to_map, in
           to_map.emplace(cmd, _c);
 
         } else {
-          throw std::runtime_error("Command " + cmd + " must be a Map.");
+          throw std::runtime_error(_sub + "Command " + cmd + " must be a Map.");
         }
       }
     } else {
-      throw std::runtime_error("Commands must be a Map.");
+      throw std::runtime_error(_sub + "Commands must be a Map.");
     }
+  } else {
+    if (lvl < 2)
+      cerr << "Warning: Commands are not defined. Probably bot will be unusable." << endl;
   }
 }
 

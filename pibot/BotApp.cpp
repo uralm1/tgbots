@@ -76,12 +76,19 @@ int BotApp::start() {
   if (config()->send_only_to_chat_id != 0)
     cout << "Sending ONLY to ChatId: " << config()->send_only_to_chat_id << endl;
 
+  cout << "Serving commands: [";
+  for (auto it = config_.commands.begin(); it != config_.commands.end(); ) {
+    cout << it->first;
+    if (++it != config_.commands.end()) cout << ", ";
+  }
+  cout << "]\n";
+
   try {
     bot_.getApi().deleteWebhook();
 
     cout << "Bot username: " << bot_.getApi().getMe()->username << endl;
 
-    if (config_.set_my_commands.size() > 0) {
+    if (config_.set_my_commands) {
       cout << "Updating bot command list.\n";
       set_my_commands();
     }
@@ -106,6 +113,6 @@ int BotApp::start() {
 
 
 void BotApp::set_my_commands() {
-  bot_.getApi().setMyCommands(config_.set_my_commands);
+  bot_.getApi().setMyCommands(config_.my_commands);
 }
 

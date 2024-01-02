@@ -23,12 +23,15 @@ public:
   int64_t send_only_to_chat_id = 0;
   std::unordered_set<int64_t> allowed_user_ids;
   std::chrono::seconds sleep_interval = std::chrono::seconds{10};
-  std::vector<TgBot::BotCommand::Ptr> set_my_commands;
+
+  bool set_my_commands = false;
+  std::vector<TgBot::BotCommand::Ptr> my_commands;
 
   struct CommandParam;
   using commands_map = std::map<std::string, CommandParam>;
   struct CommandParam {
     std::string pre_send;
+    std::string post_send;
     std::string run_without_output;
     std::string run_with_output;
     commands_map subcommands;

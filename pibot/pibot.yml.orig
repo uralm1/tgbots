@@ -7,6 +7,7 @@ AllowedUserIds:
 
 SleepInterval: 600
 
+#SetMyCommands: clear
 #SetMyCommands:
 #  start: "Starts an app"
 
@@ -14,9 +15,54 @@ Commands:
   reboot:
     PreSend: "Reboot command accepted."
     RunWithoutOutput: /etc/openhab2/misc/reboot.sh
+
   rebootcheck:
     PreSend: "Reboot (with fsck) command accepted."
     RunWithoutOutput: /etc/openhab2/misc/reboot_check.sh
+
   status:
     RunWithOutput: uptime;echo;free
+    SubCommands:
+      ip:
+        RunWithOutput: ip addr
+      df:
+        RunWithOutput: df
+      apache2:
+        RunWithOutput: systemctl -q --no-pager status apache2
+      openhab2:
+        RunWithOutput: systemctl -q --no-pager status openhab2
+      motion:
+        RunWithOutput: systemctl -q --no-pager status motion
+      sshd:
+        RunWithOutput: systemctl -q --no-pager status sshd
+
+  restart:
+    PostSend: "Command error."
+    SubCommands:
+      apache2:
+        RunWithOutput: sudo systemctl -q --no-ask-password restart apache2
+      openhab2:
+        RunWithOutput: sudo systemctl -q --no-ask-password restart openhab2
+      motion:
+        RunWithOutput: sudo systemctl -q --no-ask-password restart motion
+
+  start:
+    PostSend: "Command error."
+    SubCommands:
+      apache2:
+        RunWithOutput: sudo systemctl -q --no-ask-password start apache2
+      openhab2:
+        RunWithOutput: sudo systemctl -q --no-ask-password start openhab2
+      motion:
+        RunWithOutput: sudo systemctl -q --no-ask-password start motion
+
+  stop:
+    PostSend: "Command error."
+    SubCommands:
+      apache2:
+        RunWithOutput: sudo systemctl -q --no-ask-password stop apache2
+      openhab2:
+        RunWithOutput: sudo systemctl -q --no-ask-password stop openhab2
+      motion:
+        RunWithOutput: sudo systemctl -q --no-ask-password stop motion
 
