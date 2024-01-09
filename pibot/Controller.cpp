@@ -5,7 +5,6 @@
 #include "command.h"
 
 #include <cstdlib>
-#include <cassert>
 #include <string>
 #include <iostream>
 #include <boost/tokenizer.hpp>
@@ -18,12 +17,7 @@ Controller::Controller(BotApp* app) : app_(app), bot_(app_->bot()) {
   //clog << "in Controller constructor\n";
 }
 
-inline Config* Controller::config() { return app_->config(); }
-
-inline bool Controller::user_allowed_internal_() {
-  assert(message_);
-  return config()->allowed_user_ids.count( message_->from->id ) > 0;
-}
+Config* Controller::config() { return app_->config(); }
 
 bool Controller::user_allowed() {
   if (user_allowed_internal_()) {

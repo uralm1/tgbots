@@ -5,6 +5,7 @@
 #include <tgbot/tgbot.h>
 
 //#include <iostream>
+#include <cassert>
 
 class BotApp;
 
@@ -28,6 +29,7 @@ public:
   bool user_allowed();
 
   std::string md_escape(const std::string& s);
+
   virtual void send(const std::string& res);
   virtual void reply(const std::string& res);
   void finish() {
@@ -50,7 +52,10 @@ public:
   //void cmd_additional(TgBot::Message::Ptr message);
 
 protected:
-  bool user_allowed_internal_();
+  bool user_allowed_internal_() {
+    assert(message_);
+    return config()->allowed_user_ids.count( message_->from->id ) > 0;
+  }
 
 private:
   BotApp* app_;
