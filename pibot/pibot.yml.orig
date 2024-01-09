@@ -35,6 +35,8 @@ Commands:
         RunWithOutput: systemctl -q --no-pager status motion
       sshd:
         RunWithOutput: systemctl -q --no-pager status sshd
+      pibot:
+        RunWithOutput: systemctl -q --no-pager status pibot
 
   restart:
     PostSend: "Command error."
@@ -45,6 +47,8 @@ Commands:
         RunWithOutput: sudo systemctl -q --no-ask-password restart openhab2
       motion:
         RunWithOutput: sudo systemctl -q --no-ask-password restart motion
+      pibot:
+        RunWithOutput: sudo systemctl -q --no-ask-password restart pibot
 
   start:
     PostSend: "Command error."
@@ -55,6 +59,8 @@ Commands:
         RunWithOutput: sudo systemctl -q --no-ask-password start openhab2
       motion:
         RunWithOutput: sudo systemctl -q --no-ask-password start motion
+      pibot:
+        RunWithOutput: sudo systemctl -q --no-ask-password start pibot
 
   stop:
     PostSend: "Command error."
@@ -65,4 +71,6 @@ Commands:
         RunWithOutput: sudo systemctl -q --no-ask-password stop openhab2
       motion:
         RunWithOutput: sudo systemctl -q --no-ask-password stop motion
+      pibot:
+        RunWithOutput: sudo systemctl -q --no-ask-password stop pibot
 

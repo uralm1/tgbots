@@ -2,8 +2,8 @@
 
 set -e
 
-BOOST_DIR=/home/sv/src/cpp/boost
-LIBINST_PREFIX=/home/sv/src/cpp/inst
+BOOST_DIR=$HOME/src/cpp/boost
+LIBINST_PREFIX=$HOME/src/cpp/inst
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_PREFIX_PATH=$LIBINST_PREFIX \

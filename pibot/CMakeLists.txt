@@ -11,14 +11,14 @@ set(Boost_USE_STATIC_LIBS ON)
 include(CTest)
 
 find_package(Threads REQUIRED)
-#use cmake -DCMAKE_PREFIX_PATH=/home/sv/src/cpp/inst
+#use cmake -DCMAKE_PREFIX_PATH=$HOME/src/cpp/inst
 find_package(yaml-cpp REQUIRED)
 find_package(OpenSSL REQUIRED)
-#use cmake -DBoost_INCLUDE_DIR=/home/sv/src/cpp/boost/include
+#use cmake -DBoost_INCLUDE_DIR=$HOME/src/cpp/boost/include
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(CURL)
 #to find tgbot-cpp library define tgbot-cpp_DIR
-#cmake -Dtgbot-cpp_DIR=/home/sv/src/cpp/tgbot-cpp
+#cmake -Dtgbot-cpp_DIR=$HOME/src/cpp/tgbot-cpp
 
 include_directories(
   ${tgbot-cpp_DIR}/include
