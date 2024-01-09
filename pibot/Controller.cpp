@@ -1,7 +1,6 @@
 #include "Controller.h"
 
 #include "BotApp.h"
-#include "Config.h"
 
 #include "command.h"
 
@@ -37,18 +36,53 @@ bool Controller::user_allowed() {
 }
 
 
+string Controller::md_escape(const string& s) {
+  string r;
+  const char *nb_escaped_chars = "!<>#(){}|.";
+  bool blockt_flag = false; //`
+  unsigned cct = 0;
+
+  for (auto it = s.begin(); it != s.end(); ++it) {
+    auto c = *it;
+    if (c == '`') {
+      if (cct < 3) ++cct;
+      if (cct == 3) {
+        blockt_flag = !blockt_flag;
+        cct = 0;
+      }
+    } else {
+      if (cct > 0) cct = 0;
+    }
+
+    if (!blockt_flag && strchr(nb_escaped_chars, c)) r += '\\';
+    r += c;
+  }
+  return r;
+}
+
+
 void Controller::send(const string& res) {
   assert(message_);
 
   int64_t to = config()->send_only_to_chat_id;
-  bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, res);
+  bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
+      md_escape(res), /*text*/
+      true, /*disableWebPagePreview*/
+      0, /*replyToMessageId*/
+      nullptr, /*replyMarkup*/
+      "MarkdownV2" /*parseMode*/);
 }
 
 void Controller::reply(const string& res) {
   assert(message_);
 
   int64_t to = config()->send_only_to_chat_id;
-  bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, res, false, message_->messageId);
+  bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
+      md_escape(res), /*text*/
+      true, /*disableWebPagePreview*/
+      message_->messageId, /*replyToMessageId*/
+      nullptr, /*replyMarkup*/
+      "MarkdownV2" /*parseMode*/);
 }
 
 void Controller::reply_error() {
@@ -73,18 +107,18 @@ string Controller::param(unsigned int idx) {
 
 
 void Controller::run_with_output(const string& cmd) {
-  cout << "Running command: " << cmd << endl;
+  cout << "Executing: " << cmd << endl;
   raymii::CommandResult r = raymii::Command::exec(cmd);
   //cout << r << endl;
   cout << "Command status: " << r.exitstatus << endl;
   if (r.exitstatus == 0)
-    send("```" + r.output + "```");
+    send("```\n" + r.output + "```");
   else
     send("Command execution error (status: " + to_string(r.exitstatus) + ").");
 }
 
 void Controller::run_without_output(const string& cmd) {
-  cout << "Running command: " << cmd << endl;
+  cout << "Executing: " << cmd << endl;
   int r = system(cmd.c_str());
   cout << "Command status: " << r << endl;
   send("Command status: " + to_string(r) + ".");

@@ -49,3 +49,34 @@ void Controller::execute_cmd(const Config::CommandParam& cmd_param) {
     send(cmd_param.post_send);
 }
 
+
+void Controller::cmd_help(Message::Ptr message) {
+  app()->controller(message);
+  if ( !user_allowed() ) return;
+
+  cout << "Processing command: " << message_->text << endl;
+
+  string resp;
+  Config* cf = config();
+
+  for (auto it = cf->commands.begin(); it != cf->commands.end(); ++it) {
+    resp += " /" + it->first;
+    Config::commands_map subc = it->second.subcommands;
+    if (!subc.empty()) {
+      resp += " \\[";
+      for (auto it2 = subc.begin(); it2 != subc.end(); ) {
+        resp += it2->first;
+        if (++it2 != subc.end()) resp += ", ";
+      }
+      resp += "\\]";
+    }
+    resp += "\n";
+  }
+
+  send("Help:\n" + resp);
+
+  finish();
+}
+
+
+

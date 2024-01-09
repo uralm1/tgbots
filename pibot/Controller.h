@@ -27,6 +27,7 @@ public:
   //check is "from" userid allowed to accept commands
   bool user_allowed();
 
+  std::string md_escape(const std::string& s);
   virtual void send(const std::string& res);
   virtual void reply(const std::string& res);
   void finish() {
@@ -45,6 +46,7 @@ public:
 
   //commands
   void cmd_handler(const Config::CommandParam& cmd_param, TgBot::Message::Ptr message);
+  void cmd_help(TgBot::Message::Ptr message);
   //void cmd_additional(TgBot::Message::Ptr message);
 
 protected:

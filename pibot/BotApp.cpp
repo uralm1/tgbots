@@ -5,7 +5,6 @@
 #include <string>
 #include <iostream>
 #include <functional>
-#include <vector>
 
 using namespace std;
 using namespace TgBot;
@@ -45,20 +44,24 @@ void BotApp::startup() {
   });
 
   //commands
+#if 0
   //this is playground command
-  evt.onCommand("start", [this](Message::Ptr message) {
+  evt.onCommand("test", [this](Message::Ptr message) {
     auto c = controller(message);
     if ( !c->user_allowed() ) return;
 
-    c->send("Hi, start! ```Monospace test```");
+    c->send("H_i_, <s>t#[]{}a(r)t!?^$;|@% ```\nMonospace ! test```aaa`nomonospace test`bbb.,");
     cout << "Chat id " << message->chat->id << endl;
     cout << "From id " << message->from->id << ", username: " << message->from->username << endl;
     cout << "Msg text " << message->text << endl;
     c->finish();
   });
+#endif
 
   for (const auto& [cmd, params] : config_.commands)
     evt.onCommand(cmd, std::bind(&Controller::cmd_handler, &controller_, params, _1));
+
+  evt.onCommand("help", std::bind(&Controller::cmd_help, &controller_, _1));
 
   //evt.onCommand("additional_command", std::bind(&Controller::cmd_additional, &controller_, _1));
 }

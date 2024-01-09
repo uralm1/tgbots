@@ -9,7 +9,7 @@ SleepInterval: 600
 
 #SetMyCommands: clear
 #SetMyCommands:
-#  start: "Starts an app"
+#  help: "Help on commands"
 
 Commands:
   reboot:
