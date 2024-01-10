@@ -106,10 +106,13 @@ int BotApp::start() {
     }
   } catch (const TgException& e) {
     cerr << "TgException: " << e.what() << " (" << (int)e.errorCode << ")" << endl;
+    return 1;
   } catch (const std::runtime_error& e) {
     cerr << "runtime_error: " << e.what() << endl;
+    return 1;
   } catch (const std::exception& e) {
     cerr << "error: " << e.what() << endl;
+    return 1;
   }
 
   return 0;
