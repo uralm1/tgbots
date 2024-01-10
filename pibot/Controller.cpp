@@ -60,24 +60,32 @@ void Controller::send(const string& res) {
   assert(message_);
 
   int64_t to = config()->send_only_to_chat_id;
-  bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
-      res.empty() ? "empty" : md_escape(res), /*text*/
-      true, /*disableWebPagePreview*/
-      0, /*replyToMessageId*/
-      nullptr, /*replyMarkup*/
-      "MarkdownV2" /*parseMode*/);
+  try {
+    bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
+        res.empty() ? "empty" : md_escape(res), /*text*/
+        true, /*disableWebPagePreview*/
+        0, /*replyToMessageId*/
+        nullptr, /*replyMarkup*/
+        "MarkdownV2" /*parseMode*/);
+  } catch (const TgException& e) {
+    cerr << "TgException in send: " << e.what() << " (" << (int)e.errorCode << ")" << endl;
+  }
 }
 
 void Controller::reply(const string& res) {
   assert(message_);
 
   int64_t to = config()->send_only_to_chat_id;
-  bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
-      res.empty() ? "empty" : md_escape(res), /*text*/
-      true, /*disableWebPagePreview*/
-      message_->messageId, /*replyToMessageId*/
-      nullptr, /*replyMarkup*/
-      "MarkdownV2" /*parseMode*/);
+  try {
+    bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
+        res.empty() ? "empty" : md_escape(res), /*text*/
+        true, /*disableWebPagePreview*/
+        message_->messageId, /*replyToMessageId*/
+        nullptr, /*replyMarkup*/
+        "MarkdownV2" /*parseMode*/);
+  } catch (const TgException& e) {
+    cerr << "TgException in reply: " << e.what() << " (" << (int)e.errorCode << ")" << endl;
+  }
 }
 
 void Controller::reply_error() {

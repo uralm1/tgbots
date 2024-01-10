@@ -1,5 +1,4 @@
 #include "Controller.h"
-#include "BotApp.h"
 
 #include <stdexcept>
 #include <string>
@@ -102,9 +101,14 @@ void Controller::cmd_cam(Message::Ptr message) {
   }
 
   int64_t to = config()->send_only_to_chat_id;
-  bot_->getApi().sendPhoto(to == 0 ? message_->chat->id : to, /*chatId*/
-      file_name, /*photo*/
-      file_name /*caption*/);
+  try {
+    bot_->getApi().sendPhoto(to == 0 ? message_->chat->id : to, /*chatId*/
+        InputFile::fromFile(file_name, "image/jpeg"), /*photo*/
+        file_name /*caption*/);
+  } catch (const TgException& e) {
+    cerr << "TgException in sendPhoto: " << e.what() << " (" << (int)e.errorCode << ")" << endl;
+    send("sendPhoto failed.");
+  }
 
   finish();
 }
