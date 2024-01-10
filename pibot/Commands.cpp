@@ -83,8 +83,9 @@ void Controller::cmd_cam(Message::Ptr message) {
   string file_name;
   try {
     string sp2 = param2();
-    size_t index = sp2.empty() ? 0 : std::stoul(sp2);
-    file_name = config()->cam_files.at(index);
+    size_t index = sp2.empty() ? 1 : std::stoul(sp2);
+    if (index == 0) throw std::out_of_range("0");
+    file_name = config()->cam_files.at(index - 1);
   }
   catch (std::logic_error&) {
     send("Bad or not-existed cam.");

@@ -3,6 +3,7 @@
 #include "Poller.h"
 
 #include <string>
+#include <cstdlib>
 #include <iostream>
 #include <functional>
 
@@ -80,7 +81,7 @@ int BotApp::start() {
   if (config()->send_only_to_chat_id != 0)
     cout << "Sending ONLY to ChatId: " << config()->send_only_to_chat_id << endl;
 
-  cout << "Serving commands: [";
+  cout << "Yml commands: [";
   for (auto it = config_.commands.begin(); it != config_.commands.end(); ) {
     cout << it->first;
     if (++it != config_.commands.end()) cout << ", ";
@@ -106,16 +107,16 @@ int BotApp::start() {
     }
   } catch (const TgException& e) {
     cerr << "TgException: " << e.what() << " (" << (int)e.errorCode << ")" << endl;
-    return 1;
+    return EXIT_FAILURE;
   } catch (const std::runtime_error& e) {
     cerr << "runtime_error: " << e.what() << endl;
-    return 1;
+    return EXIT_FAILURE;
   } catch (const std::exception& e) {
     cerr << "error: " << e.what() << endl;
-    return 1;
+    return EXIT_FAILURE;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 
