@@ -41,10 +41,10 @@ TEST_F(ControllerTest, ParamTest) {
 }
 
 TEST_F(ControllerTest, MdEscapeTest) {
-  EXPECT_EQ(c->md_escape(""), "") << "empty string";
-  EXPECT_EQ(c->md_escape("asdfghhjkjl123"), "asdfghhjkjl123") << "simple string";
-  EXPECT_EQ(c->md_escape("asd!fgh```asd!123```"), "asd\\!fgh```asd!123```") << "!";
-  EXPECT_EQ(c->md_escape("asd!fgh`asd!123```!```!``!```!"), "asd\\!fgh`asd\\!123```!```\\!``\\!```!") << "tilda3 block";
-  EXPECT_EQ(c->md_escape("asd!<>#(){}|.fgh```asd!<>#(){}|.123```"), "asd\\!\\<\\>\\#\\(\\)\\{\\}\\|\\.fgh```asd!<>#(){}|.123```") << "!<>#(){}|";
+  EXPECT_EQ(Controller::md_escape(""), "") << "empty string";
+  EXPECT_EQ(Controller::md_escape("asdfghhjkjl123"), "asdfghhjkjl123") << "simple string";
+  EXPECT_EQ(Controller::md_escape("asd!fgh```asd!123```"), "asd\\!fgh```asd!123```") << "!";
+  EXPECT_EQ(Controller::md_escape("asd!fgh`asd!123```!```!``!```!"), "asd\\!fgh`asd\\!123```!```\\!``\\!```!") << "tilda3 block";
+  EXPECT_EQ(Controller::md_escape("asd!<>#(){}|.-fgh```asd!<>#(){}|.-123```"), "asd\\!\\<\\>\\#\\(\\)\\{\\}\\|\\.\\-fgh```asd!<>#(){}|.-123```") << "!<>#(){}|.-";
 }
 

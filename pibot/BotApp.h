@@ -17,7 +17,7 @@ public:
   BotApp(const BotApp&) = delete;
   BotApp& operator=(const BotApp&) = delete;
 
-  virtual ~BotApp() { /*std::clog << "in PiBotApp destructor\n";*/ }
+  virtual ~BotApp() { /*std::clog << "in BotApp destructor\n";*/ }
 
   void startup();
   int start();

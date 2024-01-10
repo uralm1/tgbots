@@ -4,14 +4,14 @@ After=network-online.target
 #Wants=network-online.target
 
 [Service]
-Type=exec
+#Type=exec
 User=openhab
 Group=openhab
 ExecStart=/etc/pibot/pibot
-ExecStop=/bin/kill -2 $MAINPID
+#ExecStop=/bin/kill -2 $MAINPID
 WorkingDirectory=/etc/pibot
 Environment="LD_LIBRARY_PATH=/etc/pibot/lib"
-#KillSignal=SIGINT
+KillSignal=SIGINT
 #Restart=on-failure
 
 [Install]

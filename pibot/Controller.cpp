@@ -13,14 +13,15 @@
 using namespace std;
 using namespace TgBot;
 
-Controller::Controller(BotApp* app) : app_(app), bot_(app_->bot()) {
+Controller::Controller(BotApp* app)
+  : app_(app),
+    bot_(app_->bot()),
+    config_(app_->config()) {
   //clog << "in Controller constructor\n";
 }
 
-Config* Controller::config() { return app_->config(); }
-
-bool Controller::user_allowed() {
-  if (user_allowed_internal_()) {
+bool Controller::check_access() {
+  if (user_allowed_internal()) {
     return true;
   } else {
     cout << "Access denied for command: " << message_->text << endl;
@@ -32,7 +33,7 @@ bool Controller::user_allowed() {
 
 string Controller::md_escape(const string& s) {
   string r;
-  const char *nb_escaped_chars = "!<>#(){}|.";
+  const char *nb_escaped_chars = "!<>#(){}|.-";
   bool blockt_flag = false; //`
   unsigned cct = 0;
 
@@ -60,7 +61,7 @@ void Controller::send(const string& res) {
 
   int64_t to = config()->send_only_to_chat_id;
   bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
-      md_escape(res), /*text*/
+      res.empty() ? "empty" : md_escape(res), /*text*/
       true, /*disableWebPagePreview*/
       0, /*replyToMessageId*/
       nullptr, /*replyMarkup*/
@@ -72,7 +73,7 @@ void Controller::reply(const string& res) {
 
   int64_t to = config()->send_only_to_chat_id;
   bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
-      md_escape(res), /*text*/
+      res.empty() ? "empty" : md_escape(res), /*text*/
       true, /*disableWebPagePreview*/
       message_->messageId, /*replyToMessageId*/
       nullptr, /*replyMarkup*/
@@ -105,9 +106,10 @@ void Controller::run_with_output(const string& cmd) {
   raymii::CommandResult r = raymii::Command::exec(cmd);
   //cout << r << endl;
   cout << "Command status: " << r.exitstatus << endl;
-  if (r.exitstatus == 0)
+  if (r.exitstatus == 0) {
+    if (r.output.empty()) r.output = "result is empty";
     send("```\n" + r.output + "```");
-  else
+  } else
     send("Command execution error (status: " + to_string(r.exitstatus) + ").");
 }
 

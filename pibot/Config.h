@@ -27,6 +27,8 @@ public:
   bool set_my_commands = false;
   std::vector<TgBot::BotCommand::Ptr> my_commands;
 
+  std::vector<std::string> cam_files;
+
   struct CommandParam;
   using commands_map = std::map<std::string, CommandParam>;
   struct CommandParam {

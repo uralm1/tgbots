@@ -15,11 +15,11 @@ void YamlConfig::load(const std::string& config_file) {
     token = config["Token"].as<string>();
     send_only_to_chat_id = config["SendOnlyToChatId"].as<int64_t>(0);
 
-    const auto& aui = config["AllowedUserIds"];
-    if (aui.IsDefined()) {
-      if (aui.IsSequence()) {
-        allowed_user_ids.reserve(aui.size());
-        for (YAML::const_iterator it = aui.begin(); it != aui.end(); ++it) {
+    const auto& aui_node = config["AllowedUserIds"];
+    if (aui_node.IsDefined()) {
+      if (aui_node.IsSequence()) {
+        allowed_user_ids.reserve(aui_node.size());
+        for (/*YAML::const_iterator*/auto it = aui_node.begin(); it != aui_node.end(); ++it) {
           //clog << "VAL: " << it->as<int64_t>() << endl;
           allowed_user_ids.insert(it->as<int64_t>());
         }
@@ -33,10 +33,10 @@ void YamlConfig::load(const std::string& config_file) {
     sleep_interval = std::chrono::seconds(config["SleepInterval"].as<unsigned long>(10));
 
     //set_my_commands default false
-    const auto& smk = config["SetMyCommands"];
-    if (smk.IsDefined()) {
-      if (smk.IsMap()) {
-        for (YAML::const_iterator it = smk.begin(); it != smk.end(); ++it) {
+    const auto& smk_node = config["SetMyCommands"];
+    if (smk_node.IsDefined()) {
+      if (smk_node.IsMap()) {
+        for (auto it = smk_node.begin(); it != smk_node.end(); ++it) {
           TgBot::BotCommand::Ptr cmd(new TgBot::BotCommand);
           cmd->command = it->first.as<string>();
           cmd->description = it->second.as<string>();
@@ -44,12 +44,24 @@ void YamlConfig::load(const std::string& config_file) {
           //clog << "command: " << cmd->command << ", desc: " << cmd->description << endl;
         }
         set_my_commands = true;
-      } else if (smk.IsScalar() && smk.as<string>(string{}) == "clear") {
+      } else if (smk_node.IsScalar() && smk_node.as<string>(string{}) == "clear") {
         //we should reset SetMyCommands for bot
         my_commands.clear();
         set_my_commands = true;
       } else {
         throw std::runtime_error("SetMyCommands must be a Map or Scalar=clear.");
+      }
+    }
+
+    const auto& camf_node = config["CamFiles"];
+    if (camf_node.IsDefined()) {
+      if (camf_node.IsSequence()) {
+        cam_files.reserve(camf_node.size());
+        for (auto it = camf_node.begin(); it != camf_node.end(); ++it) {
+          cam_files.push_back(it->as<string>());
+        }
+      } else {
+        throw std::runtime_error("CamFiles must be a Sequence.");
       }
     }
 

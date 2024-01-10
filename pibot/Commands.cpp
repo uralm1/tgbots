@@ -1,6 +1,7 @@
 #include "Controller.h"
 #include "BotApp.h"
 
+#include <stdexcept>
 #include <string>
 #include <iostream>
 
@@ -9,13 +10,12 @@ using namespace TgBot;
 
 
 void Controller::cmd_handler(const Config::CommandParam& cmd_param, Message::Ptr message) {
-  app()->controller(message);
-  if ( !user_allowed() ) return;
+  if ( !init_and_check_access(message) ) return;
 
   cout << "Processing command: " << message_->text << endl; //command with "/"
 
   string service = param2();
-  if (service == "") {
+  if (service.empty()) {
     //use cmd_param fields to execute command
     execute_cmd(cmd_param);
 
@@ -51,15 +51,13 @@ void Controller::execute_cmd(const Config::CommandParam& cmd_param) {
 
 
 void Controller::cmd_help(Message::Ptr message) {
-  app()->controller(message);
-  if ( !user_allowed() ) return;
+  if ( !init_and_check_access(message) ) return;
 
   cout << "Processing command: " << message_->text << endl;
 
   string resp;
-  Config* cf = config();
 
-  for (auto it = cf->commands.begin(); it != cf->commands.end(); ++it) {
+  for (auto it = config()->commands.begin(); it != config()->commands.end(); ++it) {
     resp += " /" + it->first;
     Config::commands_map subc = it->second.subcommands;
     if (!subc.empty()) {
@@ -72,11 +70,42 @@ void Controller::cmd_help(Message::Ptr message) {
     }
     resp += "\n";
   }
-
-  send("Help:\n" + resp);
+  send("Help:\n" + resp + " /cam \\[N\\]\n");
 
   finish();
 }
 
 
+void Controller::cmd_cam(Message::Ptr message) {
+  if ( !init_and_check_access(message) ) return;
+
+  cout << "Processing command: " << message_->text << endl;
+
+  string file_name;
+  try {
+    string sp2 = param2();
+    size_t index = sp2.empty() ? 0 : std::stoul(sp2);
+    file_name = config()->cam_files.at(index);
+  }
+  catch (std::logic_error&) {
+    send("Bad or not-existed cam.");
+    finish();
+    return;
+  }
+
+  if (FILE* test = fopen(file_name.c_str(), "r"))
+    fclose(test);
+  else {
+    send("Preview file is not exist.");
+    finish();
+    return;
+  }
+
+  int64_t to = config()->send_only_to_chat_id;
+  bot_->getApi().sendPhoto(to == 0 ? message_->chat->id : to, /*chatId*/
+      file_name, /*photo*/
+      file_name /*caption*/);
+
+  finish();
+}
 

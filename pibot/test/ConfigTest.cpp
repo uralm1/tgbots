@@ -28,6 +28,9 @@ public:
     ofs << "SetMyCommands:\n";
     ofs << "  test1: test1 description\n";
     ofs << "  test2: \"test2 description\"\n";
+    ofs << "CamFiles:\n";
+    ofs << "  - /tmp/1.jpg\n";
+    ofs << "  - /tmp/2.jpg\n";
     ofs << "Commands:\n";
     ofs << "  command1:\n";
     ofs << "    PreSend: command1 accepted.\n";
@@ -75,13 +78,16 @@ TEST_F(ConfigTest, Test1) {
   EXPECT_EQ(yc->sleep_interval, 123s) << "sleep_interval";
 
   EXPECT_THAT(yc->allowed_user_ids, testing::SizeIs(2)) << "allowed_user_ids size";
-  EXPECT_THAT(yc->allowed_user_ids, testing::UnorderedElementsAre(1111, 2222)) << "allowed_user_ids";
+  EXPECT_THAT(yc->allowed_user_ids, testing::UnorderedElementsAre(1111, 2222)) << "allowed_user_ids content";
 
   EXPECT_THAT(yc->my_commands, testing::SizeIs(2)) << "my_commands size";
 
   EXPECT_THAT(*yc->my_commands[0], testing::FieldsAre("test1", "test1 description")) << "my_commands[0]";
   EXPECT_THAT(*yc->my_commands[1], testing::FieldsAre("test2", "test2 description")) << "my_commands[1]";
   EXPECT_TRUE(yc->set_my_commands) << "set_my_commands is true";
+
+  EXPECT_THAT(yc->cam_files, testing::SizeIs(2)) << "cam_files size";
+  EXPECT_THAT(yc->cam_files, testing::ElementsAre("/tmp/1.jpg", "/tmp/2.jpg")) << "cam_files content";
 
   EXPECT_THAT(yc->commands, testing::SizeIs(2)) << "commands size";
 

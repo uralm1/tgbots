@@ -20,7 +20,7 @@ BotApp::BotApp(const std::string& config_file)
 #endif
   controller_(this)
 {
-  //clog << "in PiBotApp constructor\n";
+  //clog << "in BotApp constructor\n";
   startup();
 }
 
@@ -35,7 +35,7 @@ void BotApp::startup() {
   evt.onUnknownCommand([this](Message::Ptr message) {
     auto c = controller(message);
     //access check
-    if ( c->user_allowed_internal_() ) {
+    if ( c->user_allowed_internal() ) {
       cout << "Unknown command: " << message->text << endl;
       c->reply_error();
     } else {
@@ -48,7 +48,7 @@ void BotApp::startup() {
   //this is playground command
   evt.onCommand("test", [this](Message::Ptr message) {
     auto c = controller(message);
-    if ( !c->user_allowed() ) return;
+    if ( !c->check_access() ) return;
 
     c->send("H_i_, <s>t#[]{}a(r)t!?^$;|@% ```\nMonospace ! test```aaa`nomonospace test`bbb.,");
     cout << "Chat id " << message->chat->id << endl;
@@ -62,6 +62,7 @@ void BotApp::startup() {
     evt.onCommand(cmd, std::bind(&Controller::cmd_handler, &controller_, params, _1));
 
   evt.onCommand("help", std::bind(&Controller::cmd_help, &controller_, _1));
+  evt.onCommand("cam", std::bind(&Controller::cmd_cam, &controller_, _1));
 
   //evt.onCommand("additional_command", std::bind(&Controller::cmd_additional, &controller_, _1));
 }

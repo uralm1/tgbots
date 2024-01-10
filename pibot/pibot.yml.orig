@@ -11,6 +11,10 @@ SleepInterval: 600
 #SetMyCommands:
 #  help: "Help on commands"
 
+CamFiles:
+  - /tmp/motion/c1_shot.jpg
+  - /tmp/motion/c2_shot.jpg
+
 Commands:
   reboot:
     PreSend: "Reboot command accepted."
@@ -19,6 +23,9 @@ Commands:
   rebootcheck:
     PreSend: "Reboot (with fsck) command accepted."
     RunWithoutOutput: /etc/openhab2/misc/reboot_check.sh
+
+  ip6:
+    RunWithOutput: "ip -6 a show dev eth1 scope global|awk 'match($0,/inet6 [a-f0-9\\.:]*\\/128/){print substr($0,RSTART+6,RLENGTH-10);exit 0;}'"
 
   status:
     RunWithOutput: uptime;echo;free
@@ -33,8 +40,8 @@ Commands:
         RunWithOutput: systemctl -q --no-pager status openhab2
       motion:
         RunWithOutput: systemctl -q --no-pager status motion
-      sshd:
-        RunWithOutput: systemctl -q --no-pager status sshd
+      ssh:
+        RunWithOutput: systemctl -q --no-pager status ssh
       pibot:
         RunWithOutput: systemctl -q --no-pager status pibot
 
