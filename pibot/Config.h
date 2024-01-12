@@ -21,6 +21,7 @@ public:
 public:
   std::string token;
   int64_t send_only_to_chat_id = 0;
+  bool delete_webhook_on_start = false;
   std::unordered_set<int64_t> allowed_user_ids;
   std::chrono::seconds sleep_interval = std::chrono::seconds{10};
 

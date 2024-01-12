@@ -31,6 +31,7 @@ bool Controller::check_access() {
 }
 
 
+//TODO UTF-8?
 string Controller::md_escape(const string& s) {
   string r;
   const char *nb_escaped_chars = "!<>#(){}|.-";

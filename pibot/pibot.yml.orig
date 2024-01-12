@@ -1,6 +1,7 @@
 ---
 Token: 123456:qwertyuiop
 #SendOnlyToChatId: 654321
+#DeleteWebHookOnStart: false
 AllowedUserIds:
   - 543211
   - 12345

@@ -25,5 +25,5 @@ cmake --build build
 #cmake --install build
 #make DESTDIR=/opt/x-tools/$triple/$triple/sysroot install
 
-ctest --test-dir build
+ctest --test-dir build --output-on-failure
 

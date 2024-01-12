@@ -2,10 +2,12 @@
 
 #include "Poller.h"
 
+#include <stdexcept>
 #include <string>
 #include <cstdlib>
 #include <iostream>
 #include <functional>
+#include <thread>
 
 using namespace std;
 using namespace TgBot;
@@ -89,13 +91,34 @@ int BotApp::start() {
   cout << "]\n";
 
   try {
-    bot_.getApi().deleteWebhook();
+    try {
+      if (config_.delete_webhook_on_start) {
+        cout << "Deleting webhook as requested.\n";
+        bot_.getApi().deleteWebhook();
+      }
+    } catch (const std::runtime_error& e) {
+      cerr << "(ignored) failed: " << e.what() << endl;
+    }
 
-    cout << "Bot username: " << bot_.getApi().getMe()->username << endl;
+    unsigned attempt = 1;
+    while (attempt <= 5) {
+      try {
+        string username = bot_.getApi().getMe()->username;
+        cout << "Bot username: " << username << endl;
+        break;
+      } catch (const std::runtime_error& e) {
+        cerr << "(attempt " << attempt++ << ") Getting bot username failed: " << e.what() << endl;
+        this_thread::sleep_for(4s);
+      }
+    }
 
-    if (config_.set_my_commands) {
-      cout << "Updating bot command list.\n";
-      set_my_commands();
+    try {
+      if (config_.set_my_commands) {
+        cout << "Updating bot command list.\n";
+        set_my_commands();
+      }
+    } catch (const std::runtime_error& e) {
+      cerr << "(ignored) failed: " << e.what() << endl;
     }
 
     cout << "Running...\n";

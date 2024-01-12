@@ -14,6 +14,7 @@ void YamlConfig::load(const std::string& config_file) {
 
     token = config["Token"].as<string>();
     send_only_to_chat_id = config["SendOnlyToChatId"].as<int64_t>(0);
+    delete_webhook_on_start = config["DeleteWebHookOnStart"].as<bool>(false);
 
     const auto& aui_node = config["AllowedUserIds"];
     if (aui_node.IsDefined()) {

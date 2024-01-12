@@ -21,6 +21,7 @@ public:
     ofstream ofs(testfile1);
     ofs << "Token: 123456:asdfghjkl\n";
     ofs << "SendOnlyToChatId: 654321\n";
+    ofs << "DeleteWebHookOnStart: true\n";
     ofs << "AllowedUserIds:\n";
     ofs << "  - 1111\n";
     ofs << "  - 2222\n";
@@ -75,6 +76,7 @@ TEST_F(ConfigTest, NoYamlFileTest) {
 TEST_F(ConfigTest, Test1) {
   EXPECT_EQ(yc->token, "123456:asdfghjkl") << "token";
   EXPECT_EQ(yc->send_only_to_chat_id, 654321) << "send_only_to_chat_id";
+  EXPECT_EQ(yc->delete_webhook_on_start, true) << "delete_webhook_on_start";
   EXPECT_EQ(yc->sleep_interval, 123s) << "sleep_interval";
 
   EXPECT_THAT(yc->allowed_user_ids, testing::SizeIs(2)) << "allowed_user_ids size";
