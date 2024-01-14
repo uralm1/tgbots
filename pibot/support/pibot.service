@@ -7,10 +7,10 @@ After=network-online.target
 #Type=exec
 User=openhab
 Group=openhab
-ExecStart=/etc/pibot/pibot
+ExecStart=/opt/pibot/pibot
 #ExecStop=/bin/kill -2 $MAINPID
-WorkingDirectory=/etc/pibot
-Environment="LD_LIBRARY_PATH=/etc/pibot/lib"
+WorkingDirectory=/opt/pibot
+Environment="LD_LIBRARY_PATH=/opt/pibot/lib"
 KillSignal=SIGINT
 #Restart=on-failure
 
