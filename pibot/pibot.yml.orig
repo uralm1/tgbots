@@ -27,6 +27,9 @@ Commands:
 
   ip6:
     RunWithOutput: "ip -6 a show dev eth1 scope global|awk 'match($0,/inet6 [a-f0-9\\.:]*\\/128/){print substr($0,RSTART+6,RLENGTH-10);exit 0;}'"
+    SubCommands:
+      update:
+        RunWithoutOutput: sudo /opt/ddns/u_v6
 
   status:
     RunWithOutput: uptime;echo;free
