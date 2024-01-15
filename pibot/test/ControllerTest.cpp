@@ -33,6 +33,12 @@ TEST_F(ControllerTest, ParamTest) {
   EXPECT_EQ(c->param(2), "aaa") << "param2";
   EXPECT_EQ(c->param2(), "aaa") << "param2";
 
+  msg->text = "/testы ффф";
+  EXPECT_EQ(c->param(0), "") << "utf8 no param0";
+  EXPECT_EQ(c->param(1), "/testы") << "utf8 param1";
+  EXPECT_EQ(c->param(2), "ффф") << "utf8 param2";
+  EXPECT_EQ(c->param2(), "ффф") << "utf8 param2";
+
   msg->text = "";
   EXPECT_EQ(c->param(0), "") << "no param0";
   EXPECT_EQ(c->param(1), "") << "no param1";
@@ -46,5 +52,7 @@ TEST_F(ControllerTest, MdEscapeTest) {
   EXPECT_EQ(Controller::md_escape("asd!fgh```asd!123```"), "asd\\!fgh```asd!123```") << "!";
   EXPECT_EQ(Controller::md_escape("asd!fgh`asd!123```!```!``!```!"), "asd\\!fgh`asd\\!123```!```\\!``\\!```!") << "tilda3 block";
   EXPECT_EQ(Controller::md_escape("asd!<>#(){}|.-fgh```asd!<>#(){}|.-123```"), "asd\\!\\<\\>\\#\\(\\)\\{\\}\\|\\.\\-fgh```asd!<>#(){}|.-123```") << "!<>#(){}|.-";
+  EXPECT_EQ(Controller::md_escape("asdпроверка123"), "asdпроверка123") << "utf8 string";
+  EXPECT_EQ(Controller::md_escape("asф!ыgh```asф!ы123```"), "asф\\!ыgh```asф!ы123```") << "! utf8";
 }
 

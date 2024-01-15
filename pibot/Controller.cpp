@@ -3,6 +3,7 @@
 #include "BotApp.h"
 
 #include "command.h"
+#include "utf8.h"
 
 #include <cstdlib>
 #include <string>
@@ -31,29 +32,34 @@ bool Controller::check_access() {
 }
 
 
-//TODO UTF-8?
 string Controller::md_escape(const string& s) {
-  string r;
   const char *nb_escaped_chars = "!<>#(){}|.-";
   bool blockt_flag = false; //`
   unsigned cct = 0;
 
-  for (auto it = s.begin(); it != s.end(); ++it) {
-    auto c = *it;
-    if (c == '`') {
-      if (cct < 3) ++cct;
-      if (cct == 3) {
-        blockt_flag = !blockt_flag;
-        cct = 0;
+  try {
+    u32string r;
+    utf8::iterator it_end(s.end(), s.begin(), s.end());
+    for (utf8::iterator it(s.begin(), s.begin(), s.end()); it != it_end; ++it) {
+      char32_t c = (char32_t)*it;
+      if (c == '`') {
+        if (cct < 3) ++cct;
+        if (cct == 3) {
+          blockt_flag = !blockt_flag;
+          cct = 0;
+        }
+      } else {
+        if (cct > 0) cct = 0;
       }
-    } else {
-      if (cct > 0) cct = 0;
-    }
 
-    if (!blockt_flag && strchr(nb_escaped_chars, c)) r += '\\';
-    r += c;
+      if (!blockt_flag && c >= 0 && c < 128 && strchr(nb_escaped_chars, (char)c)) r += '\\';
+      r += c;
+    }
+    return utf8::utf32to8(r);
+  } catch (const utf8::exception& e) {
+    cerr << "bad utf8: " << e.what() << endl;
   }
-  return r;
+  return string();
 }
 
 
@@ -96,15 +102,20 @@ void Controller::reply_error() {
 
 
 string Controller::param(unsigned int idx) {
-  const string& text = message_->text;
-  boost::char_separator<char> sep(" \t");
-  boost::tokenizer<boost::char_separator<char>> tok(text, sep);
-  decltype(tok)::iterator it = tok.begin();
+  try {
+    u32string text32 = utf8::utf8to32(message_->text);
+    boost::char_separator<char32_t> sep(U" \t");
+    boost::tokenizer<boost::char_separator<char32_t>,
+      std::u32string::const_iterator, std::u32string> tok(text32, sep);
+    decltype(tok)::iterator it = tok.begin();
 
-  for (unsigned int i = 1; i <= idx; ++i) {
-    if (it == tok.end()) break;
-    if (i == idx) return *it;
-    ++it;
+    for (unsigned int i = 1; i <= idx; ++i) {
+      if (it == tok.end()) break;
+      if (i == idx) return utf8::utf32to8(*it);
+      ++it;
+    }
+  } catch (const utf8::exception& e) {
+    cerr << "bad utf8: " << e.what() << endl;
   }
   return string();
 }

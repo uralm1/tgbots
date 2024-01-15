@@ -2,6 +2,8 @@
 
 #include "Poller.h"
 
+#include "utf8.h"
+
 #include <stdexcept>
 #include <string>
 #include <cstdlib>
@@ -53,10 +55,24 @@ void BotApp::startup() {
     auto c = controller(message);
     if ( !c->check_access() ) return;
 
-    c->send("H_i_, <s>t#[]{}a(r)t!?^$;|@% ```\nMonospace ! test```aaa`nomonospace test`bbb.,");
+    //c->send("H_i_, <s>t#[]{}a(r)t!?^$;|@% ```\nMonospace ! test```aaa`nomonospace test`bbb.,");
     cout << "Chat id " << message->chat->id << endl;
     cout << "From id " << message->from->id << ", username: " << message->from->username << endl;
-    cout << "Msg text " << message->text << endl;
+    cout << "Msg text " << message->text << ", size " << message->text.size() << endl;
+
+    string s(message->text);
+    for (auto it = s.begin(); it != s.end(); ++it) cout << *it << ",";
+    cout << endl;
+
+    u32string s32 = utf8::utf8to32(s);
+    cout << "Msg32 size " << s32.size() << endl;
+    for (auto it = s32.begin(); it != s32.end(); ++it) cout << *it << ",";
+    cout << endl;
+
+    utf8::iterator it_end(s.end(), s.begin(), s.end());
+    for (utf8::iterator it8(s.begin(), s.begin(), s.end()); it8 != it_end; ++it8) cout << *it8 << ",";
+    cout << endl;
+
     c->finish();
   });
 #endif
