@@ -19,17 +19,17 @@ CamFiles:
 Commands:
   reboot:
     PreSend: "Reboot command accepted."
-    RunWithoutOutput: /etc/openhab2/misc/reboot.sh
+    RunWithoutOutput: /etc/openhab/misc/reboot.sh
 
   rebootcheck:
     PreSend: "Reboot (with fsck) command accepted."
-    RunWithoutOutput: /etc/openhab2/misc/reboot_check.sh
+    RunWithoutOutput: /etc/openhab/misc/reboot_check.sh
 
   ip6:
     RunWithOutput: "ip -6 a show dev eth1 scope global|awk 'match($0,/inet6 [a-f0-9\\.:]*\\/128/){print substr($0,RSTART+6,RLENGTH-10);exit 0;}'"
     SubCommands:
       update:
-        RunWithoutOutput: sudo /opt/ddns/u_v6
+        RunWithoutOutput: sudo /opt/ddns/u_v6 force
 
   status:
     RunWithOutput: uptime;echo;free
@@ -38,10 +38,10 @@ Commands:
         RunWithOutput: ip addr
       df:
         RunWithOutput: df
-      apache2:
-        RunWithOutput: systemctl -q --no-pager status apache2
-      openhab2:
-        RunWithOutput: systemctl -q --no-pager status openhab2
+      nginx:
+        RunWithOutput: systemctl -q --no-pager status nginx
+      openhab:
+        RunWithOutput: systemctl -q --no-pager status openhab
       motion:
         RunWithOutput: systemctl -q --no-pager status motion
       ssh:
@@ -52,10 +52,10 @@ Commands:
   restart:
     PostSend: "Command error."
     SubCommands:
-      apache2:
-        RunWithOutput: sudo systemctl -q --no-ask-password restart apache2
-      openhab2:
-        RunWithOutput: sudo systemctl -q --no-ask-password restart openhab2
+      nginx:
+        RunWithOutput: sudo systemctl -q --no-ask-password restart nginx
+      openhab:
+        RunWithOutput: sudo systemctl -q --no-ask-password restart openhab
       motion:
         RunWithOutput: sudo systemctl -q --no-ask-password restart motion
       pibot:
@@ -64,10 +64,10 @@ Commands:
   start:
     PostSend: "Command error."
     SubCommands:
-      apache2:
-        RunWithOutput: sudo systemctl -q --no-ask-password start apache2
-      openhab2:
-        RunWithOutput: sudo systemctl -q --no-ask-password start openhab2
+      nginx:
+        RunWithOutput: sudo systemctl -q --no-ask-password start nginx
+      openhab:
+        RunWithOutput: sudo systemctl -q --no-ask-password start openhab
       motion:
         RunWithOutput: sudo systemctl -q --no-ask-password start motion
       pibot:
@@ -76,10 +76,10 @@ Commands:
   stop:
     PostSend: "Command error."
     SubCommands:
-      apache2:
-        RunWithOutput: sudo systemctl -q --no-ask-password stop apache2
-      openhab2:
-        RunWithOutput: sudo systemctl -q --no-ask-password stop openhab2
+      nginx:
+        RunWithOutput: sudo systemctl -q --no-ask-password stop nginx
+      openhab:
+        RunWithOutput: sudo systemctl -q --no-ask-password stop openhab
       motion:
         RunWithOutput: sudo systemctl -q --no-ask-password stop motion
       pibot:
