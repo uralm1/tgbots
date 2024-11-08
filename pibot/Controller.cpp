@@ -67,11 +67,13 @@ void Controller::send(const string& res) {
   assert(message_);
 
   int64_t to = config()->send_only_to_chat_id;
+  auto lpo = make_shared<LinkPreviewOptions>();
+  lpo->isDisabled = true;
   try {
     bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
         res.empty() ? "empty" : md_escape(res), /*text*/
-        true, /*disableWebPagePreview*/
-        0, /*replyToMessageId*/
+        lpo, /*linkPreviewOptions*/
+        nullptr, /*replyParameters*/
         nullptr, /*replyMarkup*/
         "MarkdownV2" /*parseMode*/);
   } catch (const TgException& e) {
@@ -83,11 +85,16 @@ void Controller::reply(const string& res) {
   assert(message_);
 
   int64_t to = config()->send_only_to_chat_id;
+  auto lpo = make_shared<LinkPreviewOptions>();
+  lpo->isDisabled = true;
+  auto rpar = make_shared<ReplyParameters>();
+  rpar->messageId = message_->messageId;
+  rpar->allowSendingWithoutReply = true;
   try {
     bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
         res.empty() ? "empty" : md_escape(res), /*text*/
-        true, /*disableWebPagePreview*/
-        message_->messageId, /*replyToMessageId*/
+        lpo, /*linkPreviewOptions*/
+        rpar, /*replyParameters*/
         nullptr, /*replyMarkup*/
         "MarkdownV2" /*parseMode*/);
   } catch (const TgException& e) {
@@ -126,11 +133,15 @@ void Controller::run_with_output(const string& cmd) {
   raymii::CommandResult r = raymii::Command::exec(cmd);
   //cout << r << endl;
   cout << "Command status: " << r.exitstatus << endl;
-  if (r.exitstatus == 0) {
-    if (r.output.empty()) r.output = "result is empty";
+
+  if (r.output.empty())
+    r.output = "result is empty";
+  else
     send("```\n" + r.output + "```");
-  } else
-    send("Command execution error (status: " + to_string(r.exitstatus) + ").");
+
+  if (r.exitstatus != 0)
+    send("Command status: " + to_string(r.exitstatus) + ".");
+
 }
 
 void Controller::run_without_output(const string& cmd) {

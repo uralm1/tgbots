@@ -96,7 +96,7 @@ void Controller::cmd_cam(Message::Ptr message) {
   if (FILE* test = fopen(file_name.c_str(), "r"))
     fclose(test);
   else {
-    send("Preview file is not exist.");
+    send("Preview file does not exist.");
     finish();
     return;
   }
