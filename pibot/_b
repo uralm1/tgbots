@@ -21,6 +21,8 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \
 #  --toolchain /opt/x-tools/$triple/$variant_triple.toolchain.cmake \
 #  -DBUILD_TESTING=OFF
 
+#not needed -DBoost_USE_STATIC_LIBS=ON
+
 cmake --build build
 #cmake --install build
 #make DESTDIR=/opt/x-tools/$triple/$triple/sysroot install

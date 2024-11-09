@@ -48,6 +48,8 @@ Commands:
         RunWithOutput: systemctl -q --no-pager status ssh
       pibot:
         RunWithOutput: systemctl -q --no-pager status pibot
+      certbot:
+        RunWithOutput: systemctl -q --no-pager status certbot.timer
 
   restart:
     PostSend: "Command error."

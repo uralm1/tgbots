@@ -1,0 +1,6 @@
+#!/bin/bash
+
+triple=armv6-rpi-linux-gnueabihf
+strip=/opt/x-tools/$triple/bin/$triple-strip
+
+${strip} --strip-unneeded "$@"

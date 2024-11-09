@@ -1,0 +1,6 @@
+#!/bin/bash
+
+triple=armv6-rpi-linux-gnueabihf
+ldd=/opt/x-tools/$triple/bin/$triple-ldd
+
+${ldd} --root /opt/x-tools/$triple/$triple/sysroot "$@"
