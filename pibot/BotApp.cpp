@@ -78,10 +78,10 @@ void BotApp::startup() {
 #endif
 
   for (const auto& [cmd, params] : config_.commands)
-    evt.onCommand(cmd, std::bind(&Controller::cmd_handler, &controller_, params, _1));
+    evt.onCommand(cmd, std::bind(&Controller::cmd_handler, &controller_, params, std::placeholders::_1));
 
-  evt.onCommand("help", std::bind(&Controller::cmd_help, &controller_, _1));
-  evt.onCommand("cam", std::bind(&Controller::cmd_cam, &controller_, _1));
+  evt.onCommand("help", std::bind(&Controller::cmd_help, &controller_, std::placeholders::_1));
+  evt.onCommand("cam", std::bind(&Controller::cmd_cam, &controller_, std::placeholders::_1));
 
   //evt.onCommand("additional_command", std::bind(&Controller::cmd_additional, &controller_, _1));
 }
