@@ -12,7 +12,7 @@
 
 namespace TgBot {
 
-constexpr bool POLLER_DEBUG = false;
+constexpr bool POLLER_DEBUG = true;
 
 #define LONG_POLL_MAXCOUNT 10
 

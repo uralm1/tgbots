@@ -28,7 +28,7 @@ void YamlConfig::load(const std::string& config_file) {
         throw std::runtime_error("AllowedUsersIds must be a Sequence.");
       }
     } else {
-      cerr << "Warning: AllowedUserIds is not defined, bot will accept commands from Everyone!\n";
+      cerr << "WARNING: AllowedUserIds is not defined, bot will accept commands from Everyone!\n";
     }
 
     sleep_interval = std::chrono::seconds(config["SleepInterval"].as<unsigned long>(10));
@@ -113,7 +113,7 @@ void YamlConfig::parse_commands(const YAML::Node& node, commands_map& to_map, in
     }
   } else {
     if (lvl < 2)
-      cerr << "Warning: Commands are not defined. Probably bot will be unusable." << endl;
+      cerr << "WARNING: Commands are not defined. Probably bot will be unusable." << endl;
   }
 }
 

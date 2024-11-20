@@ -77,8 +77,13 @@ void BotApp::startup() {
   });
 #endif
 
-  for (const auto& [cmd, params] : config_.commands)
+  for (const auto& [cmd, params] : config_.commands) {
+    //warn on internal commands
+    if (cmd == "help" || cmd == "cam") {
+      cerr << "WARNING: command " << cmd << " is internal, defined operations will not be available!\n";
+    }
     evt.onCommand(cmd, std::bind(&Controller::cmd_handler, &controller_, params, std::placeholders::_1));
+  }
 
   evt.onCommand("help", std::bind(&Controller::cmd_help, &controller_, std::placeholders::_1));
   evt.onCommand("cam", std::bind(&Controller::cmd_cam, &controller_, std::placeholders::_1));
@@ -119,11 +124,11 @@ int BotApp::start() {
     unsigned attempt = 1;
     while (attempt <= 5) {
       try {
-        string username = bot_.getApi().getMe()->username;
-        cout << "Bot username: " << username << endl;
+        string name = bot_.getApi().getMe()->username.value_or("");
+        cout << "Bot name: " << name << endl;
         break;
       } catch (const std::runtime_error& e) {
-        cerr << "(attempt " << attempt++ << ") Getting bot username failed: " << e.what() << endl;
+        cerr << "(attempt " << attempt++ << ") Getting bot name failed: " << e.what() << endl;
         this_thread::sleep_for(4s);
       }
     }
