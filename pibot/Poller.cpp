@@ -40,7 +40,7 @@ bool Poller::run() {
   if (updates.empty()) {
     if (next_timeout_ > 0) {
       ++next_count_;
-      if (next_count_ > LONG_POLL_MAXCOUNT) {
+      if (next_count_ >= LONG_POLL_MAXCOUNT) {
         do_momentary_polling();
       }
     }
@@ -53,6 +53,7 @@ bool Poller::run() {
       //process ALL queue
       controller_->execute_queued_commands();
       do_long_polling_cycle();
+      return false;
     }
   } else {
     // handle updates
@@ -67,13 +68,15 @@ bool Poller::run() {
       do_momentary_polling();
     else
       do_long_polling_cycle();
+
+    return false;
   }
 
   //std::printf("lastUpdateId: %d\n", lastUpdateId_);
   //std::printf("next_timeout: %d\n", next_timeout_);
   //std::printf("next_count: %d\n", next_count_);
 
-  if (next_timeout_ == 0 && !controller_->has_commands_in_queue()) {
+  if (next_timeout_ == 0/* && !controller_->has_commands_in_queue()*/) {
     if constexpr (POLLER_DEBUG)
       std::clog << "NO TRAFFIC SLEEP\n";
     return true;

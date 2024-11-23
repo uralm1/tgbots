@@ -102,7 +102,7 @@ int BotApp::start() {
   if (config()->send_only_to_chat_id != 0)
     cout << "Sending ONLY to ChatId: " << config()->send_only_to_chat_id << endl;
 
-  cout << "Yml commands: [";
+  cout << "Yaml commands: [";
   for (auto it = config_.commands.begin(); it != config_.commands.end(); ) {
     cout << it->first;
     if (++it != config_.commands.end()) cout << ", ";
