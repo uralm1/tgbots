@@ -8,9 +8,9 @@
 
 using namespace std;
 
-void YamlConfig::load(const std::string& config_file) {
+void YamlConfig::load(string_view config_file) {
   try {
-    YAML::Node config = YAML::LoadFile(config_file);
+    YAML::Node config = YAML::LoadFile(string{config_file});
 
     token = config["Token"].as<string>();
     send_only_to_chat_id = config["SendOnlyToChatId"].as<int64_t>(0);
@@ -31,7 +31,7 @@ void YamlConfig::load(const std::string& config_file) {
       cerr << "WARNING: AllowedUserIds is not defined, bot will accept commands from Everyone!\n";
     }
 
-    sleep_interval = std::chrono::seconds(config["SleepInterval"].as<unsigned long>(10));
+    sleep_interval = chrono::seconds(config["SleepInterval"].as<unsigned long>(10));
 
     //set_my_commands default false
     const auto& smk_node = config["SetMyCommands"];

@@ -15,7 +15,7 @@ using namespace std;
 using namespace TgBot;
 
 
-BotApp::BotApp(const std::string& config_file)
+BotApp::BotApp(std::string_view config_file)
   : config_(config_file),
 #ifdef HAVE_CURL
   curlHttpClient_(),
@@ -31,8 +31,6 @@ BotApp::BotApp(const std::string& config_file)
 
 void BotApp::startup() {
   //clog << "in startup()\n";
-
-  using namespace std::placeholders;
 
   auto& evt = bot_.getEvents();
 
@@ -95,7 +93,7 @@ int BotApp::start() {
   //clog << "in start()\n";
 
   signal(SIGINT, [](int s) {
-    cout << "\nSIGINT got\n";
+    cout << "\nSIGINT got, exiting...\n";
     exit(EXIT_SUCCESS);
   });
 
@@ -145,9 +143,12 @@ int BotApp::start() {
     cout << "Running...\n";
 
     //libcurl has its 25s timeout on connection
-    Poller poller(bot_, 100, 20, config_.sleep_interval);
+    Poller poller(this, 100, 20);
     while (true) {
-      poller.run();
+      if (poller.run()) {
+        //no traffic sleep
+        this_thread::sleep_for(config_.sleep_interval);
+      }
     }
   } catch (const TgException& e) {
     cerr << "TgException: " << e.what() << " (" << (int)e.errorCode << ")" << endl;

@@ -13,11 +13,9 @@ int main(int argc, char* argv[]) {
     exit(EXIT_SUCCESS);
   }
 
-  string config_file;
+  const char* config_file = "pibot.yml";
   if (argc == 2) {
     config_file = argv[1];
-  } else {
-    config_file = "pibot.yml";
   }
 
   static BotApp app(config_file);

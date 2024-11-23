@@ -6,45 +6,48 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <chrono>
+
+class BotApp;
+class Controller;
 
 namespace TgBot {
-
-class Bot;
 class EventHandler;
+}
 
 class Poller {
-
 public:
-  Poller(const Api* api, const EventHandler* eventHandler,
-    std::int32_t limit,
-    std::int32_t long_poll_timeout,
-    std::chrono::seconds sleep_timeout,
-    std::shared_ptr<std::vector<std::string>> allowUpdates);
-
-  Poller(const Bot& bot,
+  Poller(BotApp* app,
     std::int32_t limit = 100,
     std::int32_t long_poll_timeout = 20,
-    std::chrono::seconds sleep_timeout = std::chrono::seconds(600),
-    const std::shared_ptr<std::vector<std::string>>& allowUpdates = nullptr);
+    std::shared_ptr<std::vector<std::string>> allowedUpdates = nullptr);
 
-  void run();
+  //bool can_sleep = run();
+  //return true when we can sleep for a long time
+  bool run();
 
 private:
   void set_http_client_timeout(std::int32_t timeout);
+  void do_long_polling_cycle() {
+    next_timeout_ = long_poll_timeout_;
+    next_count_ = 0;
+    set_http_client_timeout(long_poll_timeout_ + 5);
+  }
+  void do_momentary_polling() {
+    next_timeout_ = 0;
+    next_count_ = 0;
+    set_http_client_timeout(5);
+  }
 
 private:
-  const Api* api_;
-  const EventHandler* eventHandler_;
+  const TgBot::Api* api_;
+  const TgBot::EventHandler* eventHandler_;
+  Controller* controller_;
   std::int32_t limit_;
   std::int32_t long_poll_timeout_;
-  std::chrono::seconds sleep_timeout_;
   std::int32_t lastUpdateId_ = 0;
-  std::int32_t next_timeout_ = 0;
-  std::int32_t next_count_ = 0;
-  std::shared_ptr<std::vector<std::string>> allowUpdates_;
+  std::int32_t next_timeout_;
+  std::int32_t next_count_;
+  std::shared_ptr<std::vector<std::string>> allowedUpdates_;
 
 }; //class Poller
-
-} //namespace TgBot
 

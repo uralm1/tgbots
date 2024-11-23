@@ -1,5 +1,7 @@
 #include "Poller.h"
 
+#include "BotApp.h"
+
 #include "tgbot/Bot.h"
 #include "tgbot/EventHandler.h"
 
@@ -8,51 +10,49 @@
 #include <memory>
 #include <vector>
 #include <utility>
-#include <thread>
 
-namespace TgBot {
-
-constexpr bool POLLER_DEBUG = true;
+constexpr bool POLLER_DEBUG = false;
 
 #define LONG_POLL_MAXCOUNT 10
 
-Poller::Poller(const Api* api, const EventHandler* eventHandler,
+Poller::Poller(BotApp* app,
   std::int32_t limit,
   std::int32_t long_poll_timeout,
-  std::chrono::seconds sleep_timeout,
-  std::shared_ptr<std::vector<std::string>> allowUpdates)
-  : api_(api), eventHandler_(eventHandler),
+  std::shared_ptr<std::vector<std::string>> allowedUpdates)
+  : api_(&(app->bot()->getApi())),
+    eventHandler_(&(app->bot()->getEventHandler())),
+    controller_(&app->controller_),
     limit_(limit),
     long_poll_timeout_(long_poll_timeout),
-    sleep_timeout_(sleep_timeout),
-    allowUpdates_(std::move(allowUpdates)) {
+    allowedUpdates_(std::move(allowedUpdates)) {
 
-  set_http_client_timeout(5);
+  do_long_polling_cycle();
 }
 
-Poller::Poller(const Bot& bot,
-  std::int32_t limit,
-  std::int32_t long_poll_timeout,
-  std::chrono::seconds sleep_timeout,
-  const std::shared_ptr<std::vector<std::string>>& allowUpdates)
-  : Poller(&bot.getApi(), &bot.getEventHandler(), limit, long_poll_timeout, sleep_timeout, allowUpdates) {
-}
-
-void Poller::run() {
+bool Poller::run() {
   if constexpr (POLLER_DEBUG)
     std::clog << (next_timeout_ > 0 ? "Long polling" : "Momentary") << " getUpdates()\n";
+
   //std::vector<Update::Ptr> updates
-  auto updates = api_->getUpdates(lastUpdateId_, limit_, next_timeout_, allowUpdates_);
+  auto updates = api_->getUpdates(lastUpdateId_, limit_, next_timeout_, allowedUpdates_);
   //std::clog << "after getUpdates()\n";
 
   if (updates.empty()) {
     if (next_timeout_ > 0) {
       ++next_count_;
       if (next_count_ > LONG_POLL_MAXCOUNT) {
-        next_timeout_ = 0;
-        next_count_ = 0;
-        set_http_client_timeout(5);
+        do_momentary_polling();
       }
+    }
+
+    //queue processing
+    //std::clog << "Queue size: " << controller_->command_queue_.size() << "\n";
+    if (controller_->has_commands_in_queue()) {
+      if constexpr (POLLER_DEBUG)
+        std::clog << "Processing command queue\n";
+      //process ALL queue
+      controller_->execute_queued_commands();
+      do_long_polling_cycle();
     }
   } else {
     // handle updates
@@ -62,24 +62,26 @@ void Poller::run() {
       }
       eventHandler_->handleUpdate(item);
     }
-    next_timeout_ = long_poll_timeout_;
-    next_count_ = 0;
-    set_http_client_timeout(long_poll_timeout_ + 5);
+
+    if (controller_->has_commands_in_queue())
+      do_momentary_polling();
+    else
+      do_long_polling_cycle();
   }
 
   //std::printf("lastUpdateId: %d\n", lastUpdateId_);
   //std::printf("next_timeout: %d\n", next_timeout_);
   //std::printf("next_count: %d\n", next_count_);
 
-  if (next_timeout_ == 0) {
+  if (next_timeout_ == 0 && !controller_->has_commands_in_queue()) {
     if constexpr (POLLER_DEBUG)
       std::clog << "NO TRAFFIC SLEEP\n";
-    std::this_thread::sleep_for(sleep_timeout_);
+    return true;
   }
+  return false;
 }
 
 void Poller::set_http_client_timeout(std::int32_t timeout) {
   const_cast<TgBot::HttpClient&>(api_->_httpClient)._timeout = timeout;
 }
 
-} //namespace TgBot

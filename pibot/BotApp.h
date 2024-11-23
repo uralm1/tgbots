@@ -7,13 +7,15 @@
 
 #include <tgbot/tgbot.h>
 
-#include <string>
+#include <string_view>
 //#include <iostream>
+
+class Poller;
 
 
 class BotApp {
 public:
-  BotApp(const std::string& config_file);
+  BotApp(std::string_view config_file);
   BotApp(const BotApp&) = delete;
   BotApp& operator=(const BotApp&) = delete;
 
@@ -37,7 +39,9 @@ private:
   TgBot::CurlHttpClient curlHttpClient_;
 #endif
   TgBot::Bot bot_;
+protected:
   Controller controller_;
 
+friend class Poller;
 }; //class BotApp
 

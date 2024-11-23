@@ -3,6 +3,7 @@
 #include <tgbot/tgbot.h>
 
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <chrono>
 #include <map>
@@ -16,7 +17,7 @@ public:
   { }
 
   // constructor that accepts string argument to simplify things
-  Config(const std::string&) : Config() { }
+  Config(std::string_view) : Config() { }
 
 public:
   std::string token;
@@ -49,12 +50,12 @@ namespace YAML { class Node; }
 class YamlConfig : public Config {
 public:
   YamlConfig() = delete;
-  YamlConfig(const std::string& config_file) {
+  YamlConfig(std::string_view config_file) {
     load(config_file);
   }
 
 private:
-  void load(const std::string& config_file);
+  void load(std::string_view config_file);
   void parse_commands(const YAML::Node& node, commands_map& to_map, int lvl = 1);
 
 }; //class YamlConfig

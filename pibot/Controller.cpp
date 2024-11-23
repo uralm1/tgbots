@@ -32,7 +32,7 @@ bool Controller::check_access() {
 }
 
 
-string Controller::md_escape(const string& s) {
+string Controller::md_escape(const string_view s) {
   const char *nb_escaped_chars = "!<>#(){}|.-";
   bool blockt_flag = false; //`
   unsigned cct = 0;
@@ -63,15 +63,12 @@ string Controller::md_escape(const string& s) {
 }
 
 
-void Controller::send(const string& res) {
-  assert(message_);
-
-  int64_t to = config()->send_only_to_chat_id;
+void Controller::_send(const TgBot::Api* api, const int64_t to, const string_view resp) {
   auto lpo = make_shared<LinkPreviewOptions>();
   lpo->isDisabled = true;
   try {
-    bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
-        res.empty() ? "empty" : md_escape(res), /*text*/
+    api->sendMessage(to, /*chatId*/
+        resp.empty() ? "empty" : md_escape(resp), /*text*/
         lpo, /*linkPreviewOptions*/
         nullptr, /*replyParameters*/
         nullptr, /*replyMarkup*/
@@ -81,7 +78,7 @@ void Controller::send(const string& res) {
   }
 }
 
-void Controller::reply(const string& res) {
+void Controller::reply(const string_view resp) const {
   assert(message_);
 
   int64_t to = config()->send_only_to_chat_id;
@@ -92,7 +89,7 @@ void Controller::reply(const string& res) {
   rpar->allowSendingWithoutReply = true;
   try {
     bot_->getApi().sendMessage(to == 0 ? message_->chat->id : to, /*chatId*/
-        res.empty() ? "empty" : md_escape(res), /*text*/
+        resp.empty() ? "empty" : md_escape(resp), /*text*/
         lpo, /*linkPreviewOptions*/
         rpar, /*replyParameters*/
         nullptr, /*replyMarkup*/
@@ -128,26 +125,28 @@ string Controller::param(unsigned int idx) {
 }
 
 
-void Controller::run_with_output(const string& cmd) {
-  cout << "Executing: " << cmd << endl;
-  raymii::CommandResult r = raymii::Command::exec(cmd);
+void Controller::Command::run_with_output(const TgBot::Api* api) const {
+  assert(!run_with_output_.empty());
+  cout << "Executing: " << run_with_output_ << endl;
+  raymii::CommandResult r = raymii::Command::exec(string{run_with_output_});
   //cout << r << endl;
   cout << "Command status: " << r.exitstatus << endl;
 
   if (r.output.empty())
-    r.output = "result is empty";
+    send(api, "Result is empty.");
   else
-    send("```\n" + r.output + "```");
+    send(api, "```\n" + r.output + "```");
 
   if (r.exitstatus != 0)
-    send("Command status: " + to_string(r.exitstatus) + ".");
+    send(api, "Command status: " + to_string(r.exitstatus) + ".");
 
 }
 
-void Controller::run_without_output(const string& cmd) {
-  cout << "Executing: " << cmd << endl;
-  int r = system(cmd.c_str());
+void Controller::Command::run_without_output(const TgBot::Api* api) const {
+  assert(!run_without_output_.empty());
+  cout << "Executing: " << run_without_output_ << endl;
+  int r = system(string{run_without_output_}.c_str());
   cout << "Command status: " << r << endl;
-  send("Command status: " + to_string(r) + ".");
+  send(api, "Command status: " + to_string(r) + ".");
 }
 
