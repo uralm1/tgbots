@@ -97,8 +97,13 @@ int BotApp::start() {
     exit(EXIT_SUCCESS);
   });
 
+#ifdef HAVE_CURL
+  cout << "Bot compiled with CurlHttpClient and libcurl.\n";
+#else
+  cout << "Bot uses BoostHttpOnlySslClient based on boost::asio.\n";
+#endif
   cout << "BotId from token: " << config()->token.substr(0, config()->token.find_first_of(':')) << endl;
-  cout << "No traffic sleep interval: " << config()->sleep_interval.count() << " seconds" << endl;
+  cout << "No traffic sleep interval: " << config()->sleep_interval.count() << " seconds\n";
   if (config()->send_only_to_chat_id != 0)
     cout << "Sending ONLY to ChatId: " << config()->send_only_to_chat_id << endl;
 

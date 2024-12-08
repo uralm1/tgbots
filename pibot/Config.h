@@ -16,7 +16,7 @@ public:
       //: token("12345:zxcvbn")
   { }
 
-  // constructor that accepts string argument to simplify things
+  // constructor that accepts string_view argument to simplify things
   Config(std::string_view) : Config() { }
 
 public:
